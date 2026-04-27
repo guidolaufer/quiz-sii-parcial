@@ -57,6 +57,8 @@
     .badge.cripto-asi { background: #1e3a2f; color: #6ee7b7; }
     .badge.auth       { background: #3b2a0f; color: #fcd34d; }
     .badge.auditoria  { background: #3b1414; color: #fca5a5; }
+    .badge.acceso     { background: #1a3020; color: #a7f3d0; }
+    .badge.fundamentos{ background: #2a1f3b; color: #e9d5ff; }
 
     .card h2 {
       font-size: clamp(0.9rem, 3.8vw, 1.05rem);
@@ -715,6 +717,314 @@ const questions = [
     explanation: "<strong>b) Técnica vs derecho fundamental.</strong> Ejemplo: una empresa cifra perfectamente su base de datos (seguridad OK) pero vende los datos a terceros sin consentimiento (privacidad violada). O al revés: una empresa tiene política de privacidad clara pero sin controles técnicos (seguridad violada). Son complementarias pero distintas."
   },
 
+  // ══════════════════════════════════════════════════════════
+  // FUNDAMENTOS — CLASIFICACIÓN, HUELLA DIGITAL, SEG. FÍSICA
+  // ══════════════════════════════════════════════════════════
+  {
+    cat: "fundamentos",
+    q: "¿Cuál es la diferencia entre <strong>seguridad informática</strong> y <strong>seguridad de la información</strong>?",
+    options: [
+      { text: "Son sinónimos — ambas protegen los mismos activos de la misma forma" },
+      { text: "Seguridad informática protege sistemas, redes y dispositivos tecnológicos. Seguridad de la información protege la información independientemente del formato o medio (papel, digital, verbal)" },
+      { text: "Seguridad informática es más amplia — incluye todo lo que abarca la seguridad de la información" },
+      { text: "La seguridad de la información es un subconjunto exclusivo de la ciberseguridad" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) Alcance distinto.</strong> Seguridad informática: foco en activos tecnológicos (servidores, redes, dispositivos). Seguridad de la información: protege la información sin importar su formato — un documento impreso con datos confidenciales también debe protegerse aunque no sea digital."
+  },
+  {
+    cat: "fundamentos",
+    q: "Según la clasificación basada en sensibilidad, ¿cuál nivel corresponde a información que puede causar daño significativo si es divulgada?",
+    options: [
+      { text: "Pública — sin restricciones de acceso" },
+      { text: "Interna — de uso interno pero no divulgada al público" },
+      { text: "Restringida — solo personal clave tiene acceso" },
+      { text: "Confidencial — puede causar daño significativo si se expone" },
+    ],
+    correct: 3,
+    explanation: "<strong>d) Confidencial.</strong> La jerarquía de clasificación por sensibilidad es: Pública → Interna → Restringida → Confidencial. La información Confidencial es la de mayor criticidad — su divulgación puede causar daño significativo a la organización o sus partes involucradas."
+  },
+  {
+    cat: "fundamentos",
+    q: "¿Cuál es la diferencia entre <strong>seguridad física</strong> y <strong>seguridad lógica</strong>?",
+    options: [
+      { text: "La seguridad física protege servidores y la lógica protege datos" },
+      { text: "Seguridad física: protección de activos tangibles (hardware, instalaciones). Seguridad lógica: protección mediante controles de software, políticas digitales y permisos" },
+      { text: "La seguridad lógica es más importante que la física en todos los contextos" },
+      { text: "Son lo mismo aplicado a distintas capas del modelo OSI" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) Tangible vs digital.</strong> Física: candados, cámaras, control de acceso a sala de servidores, guardias. Lógica: firewall, cifrado, control de acceso con roles, políticas de contraseñas. Ambas son necesarias — un servidor perfectamente cifrado pero en una sala sin llave es vulnerable físicamente."
+  },
+  {
+    cat: "fundamentos",
+    q: "¿Qué es la <strong>huella digital activa</strong>?",
+    options: [
+      { text: "Los datos recolectados sin acción directa del usuario, como cookies o geolocalización" },
+      { text: "La información compartida conscientemente por el usuario, como posts en redes sociales o formularios completados" },
+      { text: "Los datos archivados permanentemente en bases de datos de terceros" },
+      { text: "El conjunto de contraseñas e identidades digitales de una persona" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) Información compartida conscientemente.</strong> Huella activa: posts, likes, formularios — el usuario decide publicarlos. Huella pasiva: cookies, geolocalización, historial de navegación — se recolectan sin acción directa. Huella permanente: datos archivados en servidores de terceros que persisten incluso si el usuario los borra."
+  },
+  {
+    cat: "fundamentos",
+    q: "¿Cuál es la jerarquía documental correcta en políticas de seguridad, de mayor a menor nivel de abstracción?",
+    options: [
+      { text: "Procedimiento → Norma → Política" },
+      { text: "Norma → Política → Procedimiento" },
+      { text: "Política → Norma → Procedimiento" },
+      { text: "Política → Procedimiento → Norma" },
+    ],
+    correct: 2,
+    explanation: "<strong>c) Política → Norma → Procedimiento.</strong> Política: documento de alto nivel (dirección) que define QUÉ y POR QUÉ. Norma: especifica estándares técnicos, define CUÁNTO y CON QUÉ. Procedimiento: instrucciones paso a paso, define CÓMO hacerlo. La política es la más abstracta; el procedimiento, la más concreta y operacional."
+  },
+
+  // ══════════════════════════════════════════════════════════
+  // CRIPTOGRAFÍA SIMÉTRICA — NUEVAS (MAC, MODOS, ECB/CBC)
+  // ══════════════════════════════════════════════════════════
+  {
+    cat: "cripto-sim",
+    q: "¿Qué es un <strong>MAC (Message Authentication Code)</strong> y en qué se diferencia de un hash simple?",
+    options: [
+      { text: "Es igual a un hash SHA-256 pero calculado más rápido" },
+      { text: "Es como una función hash pero requiere una clave secreta compartida — garantiza integridad Y autenticidad del mensaje" },
+      { text: "Es el nombre técnico del hash en protocolos de red" },
+      { text: "Es un certificado digital simplificado sin CA" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) Hash + clave secreta.</strong> Un hash simple verifica integridad pero cualquiera puede calcularlo. El MAC requiere la clave secreta — si el MAC coincide, el mensaje no fue alterado (integridad) Y provino de alguien que tiene la clave (autenticidad). Sin la clave no se puede generar ni falsificar el MAC."
+  },
+  {
+    cat: "cripto-sim",
+    q: "En el modo de operación <strong>ECB (Electronic Codebook)</strong>, cada bloque se cifra independientemente. ¿Cuál es su principal debilidad?",
+    options: [
+      { text: "Es demasiado lento para datos en tiempo real" },
+      { text: "Bloques de texto plano idénticos producen bloques cifrados idénticos, revelando patrones en los datos" },
+      { text: "No es compatible con AES-256" },
+      { text: "Requiere un IV (vector de inicialización) diferente para cada mensaje" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) Patrones visibles.</strong> ECB cifra cada bloque independientemente con la misma clave. Si dos bloques de texto plano son iguales, producen el mismo bloque cifrado → los patrones del original se filtran al cifrado. El modo CBC (Cipher Block Chaining) soluciona esto encadenando cada bloque con el resultado del anterior."
+  },
+  {
+    cat: "cripto-sim",
+    q: "El modo <strong>CBC (Cipher Block Chaining)</strong> encadena bloques usando el resultado cifrado del bloque anterior. ¿Qué necesita además la operación del primer bloque?",
+    options: [
+      { text: "Una clave adicional diferente a la clave principal" },
+      { text: "Un IV (vector de inicialización) — valor aleatorio que inicia la cadena para garantizar que mensajes idénticos produzcan cifrados distintos" },
+      { text: "El hash SHA-256 del mensaje completo" },
+      { text: "Una firma digital del emisor" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) Vector de inicialización (IV).</strong> El primer bloque no tiene bloque anterior para encadenar, entonces se usa el IV. Debe ser aleatorio y único por mensaje — así dos mensajes idénticos cifrados con la misma clave producen cifrados completamente distintos, evitando los patrones de ECB."
+  },
+
+  // ══════════════════════════════════════════════════════════
+  // CRIPTOGRAFÍA ASIMÉTRICA — NUEVAS (PKI, Diffie-Hellman)
+  // ══════════════════════════════════════════════════════════
+  {
+    cat: "cripto-asi",
+    q: "¿Para qué sirve el protocolo <strong>Diffie-Hellman</strong>?",
+    options: [
+      { text: "Para firmar digitalmente documentos de forma anónima" },
+      { text: "Para acordar una clave secreta compartida a través de un canal público sin necesidad de intercambiar el secreto directamente" },
+      { text: "Para cifrar grandes volúmenes de datos de forma asimétrica" },
+      { text: "Para revocar certificados digitales comprometidos" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) Acuerdo de claves sin compartir el secreto.</strong> Diffie-Hellman usa aritmética modular (operaciones fáciles de calcular en una dirección, difíciles de revertir). Dos partes pueden derivar la misma clave secreta sin que un interceptador pueda deducirla aunque vea todo el intercambio. Es la base del establecimiento de claves en TLS."
+  },
+  {
+    cat: "cripto-asi",
+    q: "En la jerarquía de PKI, ¿cuál es el rol de la <strong>Root CA</strong>?",
+    options: [
+      { text: "Emitir certificados directamente a usuarios finales y servidores web" },
+      { text: "Es la autoridad raíz de máxima confianza que firma certificados de CAs intermedias — su clave privada es el activo más crítico de toda la infraestructura" },
+      { text: "Gestionar la base de datos de certificados revocados (CRL)" },
+      { text: "Validar identidades de usuarios a través de documentos de identidad" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) Autoridad raíz de máxima confianza.</strong> Jerarquía: Root CA → Intermediate CA → End Entity (usuarios/servidores). La Root CA firma los certificados de las CAs intermedias, que a su vez emiten los certificados finales. La Root CA usualmente está offline para proteger su clave privada — si se compromete, toda la jerarquía cae."
+  },
+  {
+    cat: "cripto-asi",
+    q: "¿Qué problema resuelve la <strong>PKI (Infraestructura de Clave Pública)</strong>?",
+    options: [
+      { text: "Acelera el cifrado asimétrico para que sea tan rápido como el simétrico" },
+      { text: "El problema de autenticidad de claves públicas: sin PKI, no podés saber si una clave pública realmente pertenece a quien dice ser" },
+      { text: "Permite reutilizar la misma clave privada en múltiples certificados" },
+      { text: "Elimina la necesidad de certificados digitales en comunicaciones HTTPS" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) Autenticidad de claves públicas.</strong> Sin PKI, un atacante podría interceptar tu comunicación y substituir la clave pública legítima por la suya (ataque man-in-the-middle). La CA firma el certificado que vincula la clave pública con la identidad verificada del propietario — el navegador confía en la CA y por eso confía en el certificado."
+  },
+
+  // ══════════════════════════════════════════════════════════
+  // CONTROL DE ACCESO — BELL-LAPADULA, BIBA, MODELOS
+  // ══════════════════════════════════════════════════════════
+  {
+    cat: "acceso",
+    q: "El modelo <strong>Bell-LaPadula</strong> establece que un sujeto no puede leer datos de nivel superior a su clearance (<em>no read up</em>) ni escribir a niveles inferiores (<em>no write down</em>). ¿Qué propiedad de la CIA protege principalmente?",
+    options: [
+      { text: "Disponibilidad — garantiza que los datos siempre estén accesibles" },
+      { text: "Integridad — evita que datos correctos sean contaminados" },
+      { text: "Confidencialidad — evita que información clasificada se filtre a niveles inferiores" },
+      { text: "Autenticidad — verifica la identidad de quien accede" },
+    ],
+    correct: 2,
+    explanation: "<strong>c) Confidencialidad.</strong> Bell-LaPadula es el modelo clásico de confidencialidad militar. No read up: un agente de nivel Secreto no puede leer datos Top Secret. No write down: un agente de nivel Top Secret no puede escribir en un archivo de nivel Secreto (evitaría filtración hacia abajo). El objetivo es impedir que la información clasificada baje de nivel."
+  },
+  {
+    cat: "acceso",
+    q: "El modelo <strong>Biba</strong> prohíbe leer datos de nivel inferior (<em>no read down</em>) y escribir a niveles superiores (<em>no write up</em>). ¿Qué propiedad protege?",
+    options: [
+      { text: "Confidencialidad — igual que Bell-LaPadula pero en sentido inverso" },
+      { text: "Integridad — evita que datos de alta integridad sean contaminados por datos de menor confianza" },
+      { text: "Disponibilidad — garantiza que los datos de alta integridad siempre estén disponibles" },
+      { text: "No repudio — garantiza que los cambios puedan atribuirse a su autor" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) Integridad.</strong> Biba es el dual de Bell-LaPadula pero para integridad. No read down: un proceso de alta integridad no lee datos de baja confianza (no se contamina). No write up: un proceso de baja integridad no puede escribir en datos de alta integridad (no los corrompe). Ejemplo: un proceso de usuario no puede modificar archivos del sistema operativo."
+  },
+  {
+    cat: "acceso",
+    q: "¿Cuál es la diferencia entre <strong>identificación</strong>, <strong>autenticación</strong> y <strong>autorización</strong> en el proceso de control de acceso?",
+    options: [
+      { text: "Son tres formas distintas de referirse al mismo proceso de login" },
+      { text: "Identificación: declarar identidad. Autenticación: probar que esa identidad es legítima. Autorización: definir qué recursos puede acceder una vez autenticado" },
+      { text: "Identificación y autenticación son lo mismo; la autorización es un proceso separado" },
+      { text: "La autorización ocurre antes que la autenticación en sistemas modernos" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) Tres pasos secuenciales.</strong> Identificación: 'Soy el usuario guido' (declaro). Autenticación: 'Acá está mi contraseña/huella/token para probarlo' (verifico). Autorización: 'guido puede leer /docs pero no puede borrar /admin' (permisos). El orden es siempre: Identificación → Autenticación → Autorización."
+  },
+  {
+    cat: "acceso",
+    q: "¿Qué es el <strong>Monitor de Referencias</strong> en seguridad?",
+    options: [
+      { text: "Una herramienta de monitoreo de logs en tiempo real" },
+      { text: "El núcleo de seguridad que media todos los accesos a recursos — debe ser imposible de eludir, siempre invocado, y lo suficientemente pequeño para ser verificable" },
+      { text: "Un certificado digital que autentica al administrador del sistema" },
+      { text: "Un firewall de capa de aplicación que filtra tráfico HTTP" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) Núcleo de seguridad mediador.</strong> El Monitor de Referencias es el concepto que garantiza que ningún acceso a un recurso pueda ocurrir sin pasar por el control de seguridad. Sus tres propiedades: siempre invocado (no se puede bypasear), a prueba de manipulación, y verificable (lo suficientemente pequeño para ser auditado formalmente)."
+  },
+
+  // ══════════════════════════════════════════════════════════
+  // PREGUNTAS INTEGRADORAS — COMPARATIVAS Y TRAMPA
+  // ══════════════════════════════════════════════════════════
+  {
+    cat: "fundamentos",
+    q: "Un dato es 'la cantidad 37'. Al procesarlo en contexto se convierte en 'la temperatura corporal de un paciente es 37°C'. ¿Qué describe esta transformación?",
+    options: [
+      { text: "Dato → Cifrado → Información" },
+      { text: "Dato (recurso en bruto sin significado) → Procesamiento (darle contexto) → Información (dato procesado con utilidad para decisiones)" },
+      { text: "Información → Procesamiento → Dato" },
+      { text: "Solo aplica en bases de datos relacionales, no en seguridad" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) Dato → Procesamiento → Información.</strong> Un dato aislado no significa nada. Al darle contexto (procesarlo) se convierte en información útil para tomar decisiones. En seguridad esto importa porque clasifica qué proteger: '37' almacenado en bruto es un dato; la historia clínica completa es información que requiere clasificación y protección."
+  },
+  {
+    cat: "riesgo",
+    q: "¿Por qué no existe el <strong>riesgo cero</strong> en seguridad de la información?",
+    options: [
+      { text: "Porque los controles de seguridad son muy costosos para implementarlos todos" },
+      { text: "Porque el panorama de amenazas evoluciona constantemente, los sistemas son complejos y la intervención humana introduce vulnerabilidades inevitables" },
+      { text: "Porque la normativa ISO no permite declarar riesgo cero" },
+      { text: "Porque siempre existe al menos una amenaza activa en la red" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) Tres razones fundamentales.</strong> (1) Las amenazas evolucionan: lo que hoy es seguro mañana puede tener una vulnerabilidad descubierta. (2) Complejidad: los sistemas modernos son tan complejos que es imposible auditar todo. (3) Factor humano: el error humano, el phishing o el insider threat son imposibles de eliminar completamente. El objetivo es reducir el riesgo a un nivel aceptable."
+  },
+  {
+    cat: "cripto-sim",
+    q: "El <strong>principio de Kerckhoffs</strong> establece que la seguridad de un sistema criptográfico debe residir en la clave, no en el secreto del algoritmo. ¿Cuál es una consecuencia práctica de este principio?",
+    options: [
+      { text: "Los algoritmos de cifrado deben mantenerse secretos para mayor seguridad" },
+      { text: "Algoritmos como AES y RSA son públicos y auditables — la seguridad depende de mantener la clave secreta, no de que el algoritmo sea desconocido" },
+      { text: "La clave puede ser corta si el algoritmo es suficientemente complejo" },
+      { text: "Solo los gobiernos pueden conocer los detalles de los algoritmos de cifrado" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) Algoritmos públicos, claves secretas.</strong> AES, RSA, SHA-256 son completamente públicos — su código fuente es auditable por cualquier investigador. Esto es una fortaleza: miles de criptógrafos han intentado romperlos sin éxito. La seguridad real está en la clave. Un algoritmo secreto ('security by obscurity') colapsa en cuanto alguien lo descubre."
+  },
+  {
+    cat: "auditoria",
+    q: "¿Cuál es el marco de <strong>gobernanza de TI</strong> que ayuda a las organizaciones a optimizar el valor de TI y gestionar riesgos, más allá de la seguridad específica?",
+    options: [
+      { text: "ISO 27001 — requisitos del SGSI" },
+      { text: "NIST CSF — framework de ciberseguridad" },
+      { text: "COBIT — marco integral para gobernanza y gestión de información y tecnología empresarial" },
+      { text: "ISO 27005 — gestión de riesgos de seguridad" },
+    ],
+    correct: 2,
+    explanation: "<strong>c) COBIT.</strong> COBIT (Control Objectives for Information and related Technology) es el marco más amplio: gobernanza integral de TI alineada con objetivos de negocio. ISO 27001: SGSI enfocado en seguridad. NIST CSF: gestión de riesgos de ciberseguridad. ISO 27005: específicamente gestión de riesgos de seguridad."
+  },
+  {
+    cat: "acceso",
+    q: "Un sistema de e-banking pide contraseña (factor 1), luego detecta que el login viene de un país distinto al habitual y exige además el token físico. ¿Qué concepto de autenticación describe esto?",
+    options: [
+      { text: "MFA estático — siempre pide los mismos dos factores" },
+      { text: "SSO — autenticación única para múltiples servicios" },
+      { text: "Autenticación adaptativa — ajusta los requisitos según el riesgo detectado en tiempo real" },
+      { text: "Autenticación biométrica — usa características físicas del usuario" },
+    ],
+    correct: 2,
+    explanation: "<strong>c) Autenticación adaptativa.</strong> El sistema evaluó el contexto (país inusual = riesgo elevado) y escaló dinámicamente los requisitos de autenticación. En condiciones normales (mismo país, mismo dispositivo) habría aceptado solo la contraseña. La adaptatividad permite mayor seguridad sin sacrificar usabilidad en el caso habitual."
+  },
+  {
+    cat: "cripto-asi",
+    q: "¿Qué ventaja tiene <strong>ECC (Elliptic Curve Cryptography)</strong> sobre RSA para dispositivos con recursos limitados como IoT o móviles?",
+    options: [
+      { text: "ECC es más fácil de implementar en software que RSA" },
+      { text: "ECC ofrece seguridad equivalente con claves mucho más cortas — 256 bits ECC ≈ 3072 bits RSA — consumiendo menos CPU, memoria y batería" },
+      { text: "ECC no requiere generación de números primos, por lo que es determinista" },
+      { text: "ECC está basado en la misma matemática que RSA pero optimizado para hardware pequeño" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) Misma seguridad, claves más cortas.</strong> Las curvas elípticas permiten alcanzar el mismo nivel de seguridad que RSA con claves significativamente más cortas. Esto es crítico en IoT y móviles donde CPU, memoria y batería son limitados. Una operación con ECC-256 consume mucho menos recursos que RSA-3072 para el mismo nivel de seguridad."
+  },
+  {
+    cat: "auditoria",
+    q: "Una empresa sufre un incidente. El equipo de seguridad contiene el ataque, elimina el malware y restaura los sistemas desde backups. ¿En cuáles funciones del <strong>NIST CSF</strong> actuaron?",
+    options: [
+      { text: "Solo en Detectar — identificaron el incidente" },
+      { text: "En Detectar, Responder y Recuperar — identificaron el incidente, lo contuvieron/eliminaron y restauraron los servicios" },
+      { text: "Solo en Responder — tomaron medidas ante el incidente" },
+      { text: "En las 5 funciones simultáneamente" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) Detectar + Responder + Recuperar.</strong> Detectar: identificaron que había un incidente. Responder: contuvieron el ataque y eliminaron el malware (mitigación activa). Recuperar: restauraron sistemas desde backups (vuelta a la normalidad). Identificar y Proteger son funciones proactivas previas al incidente."
+  },
+  {
+    cat: "fundamentos",
+    q: "¿Cuál es la diferencia entre <strong>ciberespacio</strong>, <strong>ciberamenaza</strong> y <strong>ciberhigiene</strong>?",
+    options: [
+      { text: "Son tres nombres distintos para el mismo concepto de seguridad digital" },
+      { text: "Ciberespacio: el universo de interacción digital. Ciberamenaza: los riesgos y ataques en ese entorno. Ciberhigiene: las prácticas cotidianas fundamentales para protegerse" },
+      { text: "Ciberhigiene es la versión avanzada de la ciberseguridad para expertos" },
+      { text: "El ciberespacio solo incluye internet público, no redes corporativas privadas" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) Tres capas del ciclo evolutivo.</strong> Ciberespacio (dónde ocurre todo) → Ciberamenazas (qué riesgos existen) → Ciberseguridad (defensa activa) → Ciberhigiene (prácticas básicas diarias como actualizar software, usar contraseñas seguras, no abrir adjuntos sospechosos). La ciberhigiene es el nivel más básico y accesible para cualquier usuario."
+  },
+  {
+    cat: "riesgo",
+    q: "Una organización decide no corregir una vulnerabilidad de bajo impacto porque el costo del parche supera ampliamente el daño potencial. ¿Qué estrategia de riesgo aplica y qué debe hacer obligatoriamente?",
+    options: [
+      { text: "Transferir — debe contratar un seguro para ese riesgo específico" },
+      { text: "Evitar — debe eliminar el sistema vulnerable" },
+      { text: "Aceptar — asume conscientemente el riesgo y debe documentar formalmente esa decisión" },
+      { text: "Mitigar — implementa controles alternativos de menor costo" },
+    ],
+    correct: 2,
+    explanation: "<strong>c) Aceptar.</strong> Aceptar no significa ignorar — significa decidir conscientemente que el costo/esfuerzo de mitigar supera el impacto potencial y documentar esa decisión formalmente. Esta documentación es crítica: demuestra que la organización fue diligente y tomó una decisión informada, no que simplemente se olvidó del riesgo."
+  },
+
 ];
 
 // ──────────────────────────────────────────────
@@ -725,12 +1035,14 @@ let current = 0;
 let score   = 0;
 
 const CAT_LABELS = {
-  "cia":        "CIA Triad",
-  "riesgo":     "Gestión de Riesgo",
-  "cripto-sim": "Cripto Simétrica",
-  "cripto-asi": "Cripto Asimétrica",
-  "auth":       "Autenticación",
-  "auditoria":  "Auditoría",
+  "cia":         "CIA Triad",
+  "riesgo":      "Gestión de Riesgo",
+  "cripto-sim":  "Cripto Simétrica",
+  "cripto-asi":  "Cripto Asimétrica",
+  "auth":        "Autenticación",
+  "auditoria":   "Auditoría",
+  "acceso":      "Control de Acceso",
+  "fundamentos": "Fundamentos",
 };
 
 function escHtml(s){
