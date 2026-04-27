@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quiz — Seguridad e Integridad de la Información</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    html { font-size: 16px; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f1117;
+      color: #e2e8f0;
+      min-height: 100vh;
+      padding: 1.25rem env(safe-area-inset-right, 0.75rem) 4rem env(safe-area-inset-left, 0.75rem);
+      padding-left: max(0.75rem, env(safe-area-inset-left));
+      padding-right: max(0.75rem, env(safe-area-inset-right));
+    }
+
+    header { text-align: center; margin-bottom: 1.5rem; }
+    header h1 {
+      font-size: clamp(1.15rem, 5.5vw, 1.7rem);
+      color: #7dd3fc; margin-bottom: 0.25rem; line-height: 1.3;
+    }
+    header p { color: #94a3b8; font-size: clamp(0.72rem, 3vw, 0.85rem); line-height: 1.5; }
+
+    #progress-bar-wrap { max-width: 680px; margin: 0 auto 1.25rem; }
+    #progress-label {
+      display: flex; justify-content: space-between;
+      font-size: 0.75rem; color: #64748b; margin-bottom: 0.35rem;
+    }
+    #progress-bar { height: 6px; background: #1e293b; border-radius: 99px; overflow: hidden; }
+    #progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #3b82f6, #7dd3fc);
+      border-radius: 99px; transition: width 0.4s ease; width: 0%;
+    }
+
+    .card {
+      background: #1e293b; border: 1px solid #334155;
+      border-radius: 14px;
+      padding: clamp(1rem, 4vw, 1.5rem);
+      max-width: 680px; margin: 0 auto 1rem;
+      width: 100%;
+    }
+
+    .badge {
+      display: inline-block; font-size: 0.65rem; font-weight: 700;
+      letter-spacing: 0.07em; text-transform: uppercase;
+      padding: 0.2rem 0.6rem; border-radius: 99px; margin-bottom: 0.85rem;
+    }
+    .badge.cia        { background: #1a3a5f; color: #93c5fd; }
+    .badge.riesgo     { background: #3b1f5e; color: #c4b5fd; }
+    .badge.cripto-sim { background: #14532d; color: #86efac; }
+    .badge.cripto-asi { background: #1e3a2f; color: #6ee7b7; }
+    .badge.auth       { background: #3b2a0f; color: #fcd34d; }
+    .badge.auditoria  { background: #3b1414; color: #fca5a5; }
+
+    .card h2 {
+      font-size: clamp(0.9rem, 3.8vw, 1.05rem);
+      line-height: 1.65; margin-bottom: 1rem; color: #f1f5f9;
+      word-break: break-word;
+    }
+
+    pre {
+      background: #0f172a; border: 1px solid #263148;
+      border-radius: 8px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 0.7rem 0.85rem;
+      font-size: clamp(0.65rem, 2.5vw, 0.78rem);
+      line-height: 1.6; color: #e2e8f0;
+      margin-bottom: 0;
+      white-space: pre;
+      word-break: normal;
+      max-width: 100%;
+    }
+    code { font-family: ui-monospace, 'Cascadia Code', 'Fira Code', monospace; }
+
+    h2 code, .feedback code, .text code {
+      background: #1e293b; border: 1px solid #334155;
+      border-radius: 4px; padding: 0.1em 0.35em;
+      font-size: 0.88em; color: #93c5fd;
+      word-break: break-all;
+    }
+
+    .options { display: flex; flex-direction: column; gap: 0.55rem; }
+
+    .option {
+      display: flex; align-items: flex-start; gap: 0.75rem;
+      background: #0f172a; border: 1.5px solid #334155;
+      border-radius: 10px;
+      padding: clamp(0.65rem, 2.5vw, 0.85rem) clamp(0.7rem, 2.5vw, 0.9rem);
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      user-select: none;
+      min-width: 0;
+      overflow: hidden;
+    }
+    .option:active:not(.disabled) { background: #172033; border-color: #3b82f6; }
+    @media (hover: hover) {
+      .option:hover:not(.disabled) { border-color: #3b82f6; background: #172033; }
+    }
+
+    .option .letter {
+      flex-shrink: 0;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: #1e293b; border: 1.5px solid #475569;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 700; color: #94a3b8;
+      transition: all 0.15s;
+      min-width: 28px;
+    }
+
+    .option .text {
+      font-size: clamp(0.82rem, 3.2vw, 0.88rem);
+      line-height: 1.55; color: #cbd5e1;
+      min-width: 0; flex: 1; word-break: break-word;
+    }
+    .option .text pre {
+      margin-top: 0.4rem;
+      font-size: clamp(0.6rem, 2.3vw, 0.73rem);
+      white-space: pre-wrap; word-break: break-all; overflow-x: visible;
+    }
+
+    .option.correct         { border-color: #22c55e; background: #052e16; }
+    .option.correct .letter { background: #22c55e; border-color: #22c55e; color: #fff; }
+    .option.wrong           { border-color: #ef4444; background: #2d0a0a; }
+    .option.wrong .letter   { background: #ef4444; border-color: #ef4444; color: #fff; }
+    .option.dimmed          { opacity: 0.35; }
+    .option.disabled        { cursor: default; }
+
+    .feedback {
+      display: none; margin-top: 0.9rem;
+      padding: clamp(0.75rem, 3vw, 1rem);
+      border-radius: 10px;
+      font-size: clamp(0.8rem, 3vw, 0.87rem); line-height: 1.65;
+      word-break: break-word;
+    }
+    .feedback.show { display: block; }
+    .feedback.ok   { background: #052e16; border: 1px solid #16a34a; color: #86efac; }
+    .feedback.fail { background: #2d0a0a; border: 1px solid #dc2626; color: #fca5a5; }
+    .feedback strong { display: block; margin-bottom: 0.3rem; font-size: 0.92rem; }
+
+    .btn-row { display: flex; gap: 0.6rem; margin-top: 1rem; }
+
+    .btn-prev {
+      flex: 0 0 auto;
+      padding: 0.8rem 1rem;
+      background: #1e293b; color: #94a3b8;
+      border: 1.5px solid #334155; border-radius: 10px;
+      font-size: clamp(0.82rem, 3vw, 0.92rem); font-weight: 600;
+      cursor: pointer; display: none;
+      min-height: 48px; touch-action: manipulation;
+    }
+    .btn-prev:active { background: #273548; }
+    .btn-prev.show { display: block; }
+
+    .btn-next {
+      flex: 1;
+      padding: 0.8rem;
+      background: #3b82f6; color: #fff;
+      border: none; border-radius: 10px;
+      font-size: clamp(0.82rem, 3vw, 0.92rem); font-weight: 600;
+      cursor: pointer; display: none;
+      min-height: 48px; touch-action: manipulation;
+    }
+    .btn-next:active { background: #2563eb; }
+    .btn-next.show { display: block; }
+
+    #score-screen {
+      display: none; text-align: center;
+      max-width: 680px; margin: 0 auto;
+      background: #1e293b; border: 1px solid #334155;
+      border-radius: 14px; padding: clamp(1.5rem, 5vw, 2.5rem) clamp(1rem, 4vw, 1.5rem);
+      width: 100%;
+    }
+    #score-screen h2  { font-size: clamp(1.2rem, 5vw, 1.4rem); color: #7dd3fc; margin-bottom: 0.4rem; }
+    #score-screen .big {
+      font-size: clamp(2.8rem, 12vw, 3.5rem); font-weight: 800;
+      color: #f1f5f9; margin: 0.6rem 0;
+    }
+    #score-screen p { color: #94a3b8; margin-bottom: 1.25rem; font-size: clamp(0.85rem, 3vw, 0.92rem); }
+
+    .breakdown {
+      display: flex; justify-content: center; gap: 0.6rem;
+      flex-wrap: wrap; margin-bottom: 1.25rem;
+    }
+    .breakdown-item {
+      background: #0f172a; border: 1px solid #334155; border-radius: 10px;
+      padding: 0.55rem 0.9rem; font-size: 0.78rem; color: #94a3b8;
+    }
+    .breakdown-item span {
+      display: block; font-size: 1.15rem; font-weight: 700;
+      color: #f1f5f9; margin-bottom: 0.1rem;
+    }
+
+    .btn-restart {
+      padding: 0.8rem 2rem; background: #3b82f6; color: #fff;
+      border: none; border-radius: 10px;
+      font-size: clamp(0.9rem, 3.5vw, 1rem); font-weight: 600;
+      cursor: pointer; min-height: 48px; touch-action: manipulation;
+      width: 100%; max-width: 280px;
+    }
+    .btn-restart:active { background: #2563eb; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Quiz — Seguridad e Integridad de la Información</h1>
+  <p>CIA Triad · Gestión de Riesgo · Criptografía · Autenticación · Auditoría</p>
+</header>
+
+<div id="progress-bar-wrap">
+  <div id="progress-label">
+    <span id="prog-text">Pregunta 1</span>
+    <span id="score-text">0 correctas</span>
+  </div>
+  <div id="progress-bar"><div id="progress-fill"></div></div>
+</div>
+
+<div id="quiz-container"></div>
+
+<div id="score-screen">
+  <h2>Resultado final</h2>
+  <div class="big" id="final-score"></div>
+  <p id="final-msg"></p>
+  <div class="breakdown" id="breakdown"></div>
+  <button class="btn-restart" onclick="restart()">Volver a intentar</button>
+</div>
+
+<script>
+const questions = [
+
+  // ══════════════════════════════════════════════════════════
+  // CIA TRIAD
+  // ══════════════════════════════════════════════════════════
+  {
+    cat: "cia",
+    q: "¿Cuál de los pilares de la Triada CIA garantiza que solo las personas autorizadas pueden acceder a la información?",
+    options: [
+      { text: "Disponibilidad" },
+      { text: "Integridad" },
+      { text: "Confidencialidad" },
+      { text: "Autenticidad" },
+    ],
+    correct: 2,
+    explanation: "<strong>c) Confidencialidad.</strong> Garantiza que solo quienes están autorizados pueden acceder a la información. Se viola con filtraciones de datos o accesos no autorizados. Se protege con cifrado AES-256, MFA y control de acceso."
+  },
+  {
+    cat: "cia",
+    q: "Un atacante modifica silenciosamente registros en una base de datos. ¿Cuál pilar de la Triada CIA fue violado?",
+    options: [
+      { text: "Confidencialidad — los datos fueron expuestos" },
+      { text: "Integridad — los datos fueron alterados sin autorización" },
+      { text: "Disponibilidad — el sistema quedó fuera de servicio" },
+      { text: "No viola ningún pilar — fue una modificación interna" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) Integridad.</strong> La integridad garantiza que la información no pueda ser modificada sin autorización. Un atacante que altera registros viola este pilar. Se protege con hashes SHA-256, firmas digitales y logs de auditoría."
+  },
+  {
+    cat: "cia",
+    q: "Un ataque de ransomware cifra todos los servidores de una empresa y los deja inaccesibles. ¿Qué pilar de la Triada CIA es el más afectado?",
+    options: [
+      { text: "Confidencialidad — los datos podrían ser expuestos" },
+      { text: "Integridad — los datos fueron modificados" },
+      { text: "Disponibilidad — los sistemas no están operativos cuando se necesitan" },
+      { text: "Los tres pilares por igual" },
+    ],
+    correct: 2,
+    explanation: "<strong>c) Disponibilidad.</strong> La disponibilidad garantiza que los sistemas estén operativos cuando se necesiten. Un ransomware que los deja inaccesibles la viola directamente. Se mitiga con backups, redundancia y planes de recuperación (DRP)."
+  },
+  {
+    cat: "cia",
+    q: "En entornos OT (tecnologías operativas como SCADA o PLCs), ¿cuál pilar de la CIA tiene mayor prioridad respecto a IT?",
+    options: [
+      { text: "Confidencialidad, porque los datos industriales son secretos comerciales" },
+      { text: "Integridad, porque los procesos físicos requieren datos precisos" },
+      { text: "Disponibilidad, porque una interrupción puede causar daños físicos o pérdida de vidas" },
+      { text: "La priorización es idéntica a IT" },
+    ],
+    correct: 2,
+    explanation: "<strong>c) Disponibilidad.</strong> En OT (PLCs, SCADA, sensores industriales), una interrupción no implica solo pérdida económica sino riesgos físicos reales: accidentes en plantas, cortes de energía en hospitales. Cero tolerancia a downtime. En IT la prioridad es Confidencialidad."
+  },
+  {
+    cat: "cia",
+    q: "¿Cuál de las siguientes medidas protege principalmente la <strong>Integridad</strong> de la información?",
+    options: [
+      { text: "Cifrado AES-256 de los archivos almacenados" },
+      { text: "Sistemas de backups automáticos diarios" },
+      { text: "Hash SHA-256 para verificar que un archivo no fue modificado" },
+      { text: "MFA para el acceso al sistema" },
+    ],
+    correct: 2,
+    explanation: "<strong>c) Hash SHA-256.</strong> El hash permite verificar que un archivo no fue alterado: si el hash calculado coincide con el hash original, la integridad está intacta. AES-256 protege confidencialidad. Los backups protegen disponibilidad. MFA protege autenticación."
+  },
+
+  // ══════════════════════════════════════════════════════════
+  // GESTIÓN DE RIESGO
+  // ══════════════════════════════════════════════════════════
+  {
+    cat: "riesgo",
+    q: "¿Cuál de los siguientes componentes representa una debilidad interna que puede ser explotada por una amenaza?",
+    options: [
+      { text: "Activo" },
+      { text: "Amenaza" },
+      { text: "Vulnerabilidad" },
+      { text: "Impacto" },
+    ],
+    correct: 2,
+    explanation: "<strong>c) Vulnerabilidad.</strong> La vulnerabilidad es la debilidad explotable (ej: software sin parchear, contraseñas débiles, falta de MFA). La amenaza es quien o qué puede causar daño. Sin vulnerabilidad, la amenaza no puede materializarse."
+  },
+  {
+    cat: "riesgo",
+    q: "Una empresa decide no almacenar números de tarjetas de crédito de sus clientes para evitar que sean robados. ¿Qué estrategia de tratamiento del riesgo está aplicando?",
+    options: [
+      { text: "Mitigar — redujo el impacto potencial con un control técnico" },
+      { text: "Transferir — delegó la responsabilidad a un tercero" },
+      { text: "Evitar — eliminó la actividad que genera el riesgo" },
+      { text: "Aceptar — decidió convivir con el riesgo" },
+    ],
+    correct: 2,
+    explanation: "<strong>c) Evitar.</strong> Al no almacenar los datos, elimina directamente la actividad que crea el riesgo. Si los datos no existen, no pueden ser robados. Esta estrategia se usa cuando el riesgo es inaceptable y no hay forma viable de mitigarlo suficientemente."
+  },
+  {
+    cat: "riesgo",
+    q: "Una universidad contrata un ciberseguro para cubrirse ante posibles ataques. ¿Qué estrategia de riesgo aplica?",
+    options: [
+      { text: "Evitar" },
+      { text: "Transferir" },
+      { text: "Mitigar" },
+      { text: "Aceptar" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) Transferir.</strong> El ciberseguro delega la consecuencia económica a un tercero (la aseguradora). El riesgo no desaparece — si ocurre el incidente, la aseguradora absorbe el costo. También aplica cuando se usa un proveedor cloud certificado."
+  },
+  {
+    cat: "riesgo",
+    q: "Dado un activo crítico con probabilidad ALTA de ser atacado e impacto ALTO en caso de concretarse, ¿cómo clasifica la Matriz de Riesgo 3×3 a este riesgo?",
+    options: [
+      { text: "Bajo — se acepta y se monitorea rutinariamente" },
+      { text: "Medio — se prepara un plan de contingencia" },
+      { text: "Alto — requiere atención prioritaria" },
+      { text: "Crítico — requiere atención inmediata e inaplazable" },
+    ],
+    correct: 3,
+    explanation: "<strong>d) Crítico.</strong> En la Matriz 3×3, Alta Probabilidad × Alto Impacto = celda Crítica (🔴). Requiere atención inmediata. Alta Probabilidad × Medio Impacto = Alto. Media Probabilidad × Alto Impacto = Alto. Solo Baja Probabilidad + Bajo Impacto = Verde."
+  },
+  {
+    cat: "riesgo",
+    q: "¿Cuál es la norma ISO de la familia 27000 que define los requisitos del SGSI y es <strong>certificable</strong>?",
+    options: [
+      { text: "ISO 27002 — Código de buenas prácticas de controles" },
+      { text: "ISO 27005 — Gestión de riesgos de seguridad" },
+      { text: "ISO 27001 — Requisitos del SGSI" },
+      { text: "ISO 27000 — Vocabulario y definiciones generales" },
+    ],
+    correct: 2,
+    explanation: "<strong>c) ISO 27001.</strong> Es la única certificable de la familia. Define los requisitos del SGSI con el ciclo PHVA. ISO 27002 provee controles (complementaria, no certificable). ISO 27005 es para gestión de riesgos. Las organizaciones se certifican en ISO 27001."
+  },
+  {
+    cat: "riesgo",
+    q: "En el ciclo PHVA del SGSI, ¿qué sucede en la fase <strong>Verificar</strong>?",
+    options: [
+      { text: "Se identifican activos y se define el alcance del SGSI" },
+      { text: "Se implementan los controles técnicos y se capacita al personal" },
+      { text: "Se mide el desempeño, se realizan auditorías internas y se monitorean incidentes" },
+      { text: "Se toman medidas correctivas para mejorar continuamente" },
+    ],
+    correct: 2,
+    explanation: "<strong>c) Verificar.</strong> Planificar (identificar, analizar riesgos) → Hacer (implementar controles) → <em>Verificar</em> (medir, auditar, monitorear) → Actuar (corregir y mejorar). El ciclo se repite continuamente."
+  },
+  {
+    cat: "riesgo",
+    q: "La fórmula del riesgo es: Riesgo = Probabilidad × Impacto. ¿De qué depende la Probabilidad?",
+    options: [
+      { text: "Solo de la fortaleza del atacante" },
+      { text: "De la Amenaza y la Vulnerabilidad" },
+      { text: "Del valor del activo" },
+      { text: "Del costo del control de seguridad aplicado" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) Amenaza × Vulnerabilidad.</strong> Probabilidad = Amenaza × Vulnerabilidad. Sin vulnerabilidad (debilidad explotable), la amenaza no puede materializarse → probabilidad cae a cero. Mitigar vulnerabilidades reduce la probabilidad de ocurrencia."
+  },
+
+  // ══════════════════════════════════════════════════════════
+  // CRIPTOGRAFÍA SIMÉTRICA
+  // ══════════════════════════════════════════════════════════
+  {
+    cat: "cripto-sim",
+    q: "¿Cuál es la característica fundamental que define a la criptografía <strong>simétrica</strong>?",
+    options: [
+      { text: "Usa una clave pública para cifrar y una privada para descifrar" },
+      { text: "Usa la misma clave para cifrar y descifrar" },
+      { text: "No usa claves — la seguridad está en el algoritmo" },
+      { text: "Genera una clave nueva para cada mensaje" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) Misma clave.</strong> La criptografía simétrica usa una única clave compartida entre emisor y receptor. Es muy rápida para grandes volúmenes de datos, pero tiene el problema de distribución segura de claves: ¿cómo compartir la clave sin que un atacante la intercepte?"
+  },
+  {
+    cat: "cripto-sim",
+    q: "¿Cuál algoritmo simétrico es el estándar actual para cifrado de datos?",
+    options: [
+      { text: "DES — Data Encryption Standard" },
+      { text: "3DES — Triple DES" },
+      { text: "AES — Advanced Encryption Standard" },
+      { text: "MD5 — Message Digest 5" },
+    ],
+    correct: 2,
+    explanation: "<strong>c) AES.</strong> AES (especialmente AES-256) es el estándar actual. DES fue declarado obsoleto en 2005 (clave 56 bits, roto en 56 horas en 1998). 3DES es legado (lento, retirado en 2023). MD5 es una función hash, no un algoritmo de cifrado."
+  },
+  {
+    cat: "cripto-sim",
+    q: "¿Cuál es la diferencia fundamental entre una función <strong>hash</strong> y el <strong>cifrado</strong>?",
+    options: [
+      { text: "El hash es más lento que el cifrado" },
+      { text: "El hash es unidireccional (no se puede revertir, no hay clave). El cifrado es bidireccional (se descifra con la clave)" },
+      { text: "El hash usa clave pública; el cifrado usa clave privada" },
+      { text: "No hay diferencia — son términos intercambiables" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) Unidireccional vs bidireccional.</strong> Un hash es una 'huella digital' del dato: no hay clave, no se puede revertir. Si alguien te da un hash, no podés obtener el dato original. El cifrado sí se puede revertir si tenés la clave. Esta distinción es crítica en el examen."
+  },
+  {
+    cat: "cripto-sim",
+    q: "¿Qué es el <strong>efecto avalancha</strong> en las funciones hash?",
+    options: [
+      { text: "Que el hash crece en tamaño a medida que el input es más largo" },
+      { text: "Que un mínimo cambio en el input (una letra, un bit) produce un hash completamente diferente" },
+      { text: "Que el hash puede producir el mismo resultado para dos inputs diferentes" },
+      { text: "Que calcular el hash requiere mucho poder de cómputo" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) Cambio mínimo → hash totalmente distinto.</strong> Si cambio 'hola' por 'Hola', el SHA-256 resultante es completamente diferente. Esto garantiza que cualquier modificación, por pequeña que sea, es detectable comparando los hashes."
+  },
+  {
+    cat: "cripto-sim",
+    q: "¿Para qué sirve el <strong>salt</strong> en el contexto del hash de contraseñas?",
+    options: [
+      { text: "Para acelerar el cálculo del hash" },
+      { text: "Para que el hash sea reversible en caso de recuperación de cuenta" },
+      { text: "Para evitar ataques de Rainbow Table añadiendo un valor aleatorio único a cada contraseña antes de hashear" },
+      { text: "Para cifrar el hash con una clave adicional" },
+    ],
+    correct: 2,
+    explanation: "<strong>c) Evitar Rainbow Tables.</strong> Una Rainbow Table es una tabla precalculada de hashes de contraseñas comunes. El salt añade un valor aleatorio único por usuario antes de hashear, así dos usuarios con la misma contraseña tienen hashes distintos y las tablas precalculadas no sirven."
+  },
+  {
+    cat: "cripto-sim",
+    q: "¿Por qué <strong>MD5</strong> ya no debe usarse para almacenar contraseñas?",
+    options: [
+      { text: "Porque es demasiado lento para sistemas modernos" },
+      { text: "Porque produce hashes demasiado cortos (solo 64 bits)" },
+      { text: "Porque se demostró que es posible crear colisiones (dos entradas distintas con el mismo hash)" },
+      { text: "Porque fue prohibido por la ISO en 2020" },
+    ],
+    correct: 2,
+    explanation: "<strong>c) Colisiones.</strong> Desde 2004 se demostró que es posible generar dos archivos distintos con el mismo hash MD5 (colisión). Esto rompe la propiedad de unicidad del hash. MD5 solo es aceptable para checksums no criptográficos. Para contraseñas usar bcrypt, scrypt o Argon2."
+  },
+  {
+    cat: "cripto-sim",
+    q: "Se necesita descifrar el mensaje cifrado con César con desplazamiento +3: la letra <strong>F</strong>. ¿Cuál es la letra original?",
+    options: [
+      { text: "H" },
+      { text: "I" },
+      { text: "C" },
+      { text: "D" },
+    ],
+    correct: 2,
+    explanation: "<strong>c) C.</strong> Para descifrar César con desplazamiento +3 se resta 3 a cada letra. F (posición 6) − 3 = C (posición 3). El alfabeto: A=1, B=2, C=3, D=4, E=5, F=6... Si el desplazamiento fue +3 para cifrar, se aplica −3 para descifrar."
+  },
+
+  // ══════════════════════════════════════════════════════════
+  // CRIPTOGRAFÍA ASIMÉTRICA
+  // ══════════════════════════════════════════════════════════
+  {
+    cat: "cripto-asi",
+    q: "Para enviarle un mensaje <strong>confidencial</strong> a Ana, ¿con qué clave lo cifrás?",
+    options: [
+      { text: "Con tu propia clave privada" },
+      { text: "Con tu propia clave pública" },
+      { text: "Con la clave pública de Ana" },
+      { text: "Con la clave privada de Ana" },
+    ],
+    correct: 2,
+    explanation: "<strong>c) Clave pública de Ana.</strong> Solo Ana puede descifrarlo con su clave privada (que solo ella tiene). La clave pública de Ana es de libre distribución — cualquiera puede usarla para cifrar mensajes que solo Ana puede leer."
+  },
+  {
+    cat: "cripto-asi",
+    q: "Para <strong>firmar digitalmente</strong> un documento, ¿qué clave usás?",
+    options: [
+      { text: "La clave pública del destinatario" },
+      { text: "Tu propia clave pública" },
+      { text: "Tu propia clave privada" },
+      { text: "La clave privada del destinatario" },
+    ],
+    correct: 2,
+    explanation: "<strong>c) Tu clave privada.</strong> Solo vos tenés tu clave privada → la firma prueba que vino de vos (autenticidad). Cualquiera puede verificar la firma con tu clave pública. Este esquema garantiza integridad + autenticidad + no repudio."
+  },
+  {
+    cat: "cripto-asi",
+    q: "¿Qué garantías ofrece una <strong>firma digital</strong>? (seleccioná la más completa)",
+    options: [
+      { text: "Solo confidencialidad — nadie más puede leer el mensaje" },
+      { text: "Solo autenticidad — sabemos quién lo envió" },
+      { text: "Integridad, Autenticidad y No Repudio — el mensaje no fue alterado, proviene del firmante y este no puede negarlo" },
+      { text: "Disponibilidad — el mensaje siempre llega al destinatario" },
+    ],
+    correct: 2,
+    explanation: "<strong>c) Integridad + Autenticidad + No Repudio.</strong> La firma digital NO cifra el contenido (no garantiza confidencialidad). Garantiza que el mensaje no fue alterado (integridad), que viene del firmante (autenticidad) y que el firmante no puede negar haberlo firmado (no repudio)."
+  },
+  {
+    cat: "cripto-asi",
+    q: "En el proceso de verificación de una firma digital, el receptor descifra la firma con la clave pública del emisor y obtiene un hash. ¿Qué hace luego para verificar la integridad?",
+    options: [
+      { text: "Compara la firma con una lista de firmas válidas en el servidor" },
+      { text: "Calcula el hash del mensaje recibido y lo compara con el hash obtenido de la firma" },
+      { text: "Cifra el mensaje con la clave privada del receptor para comprobar el par" },
+      { text: "Consulta a la CA si la firma es válida" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) Comparar hashes.</strong> Receptor descifra firma (con clave pública emisor) → obtiene hash_original. Luego calcula SHA-256 del mensaje recibido → hash_recibido. Si hash_original == hash_recibido: integridad OK y autenticidad OK. Si difieren: el mensaje fue alterado o la firma es falsa."
+  },
+  {
+    cat: "cripto-asi",
+    q: "¿Cuál es la base matemática del algoritmo <strong>RSA</strong>?",
+    options: [
+      { text: "Logaritmo discreto sobre cuerpos finitos" },
+      { text: "Ecuaciones sobre curvas elípticas" },
+      { text: "La dificultad de factorizar el producto de dos números primos grandes" },
+      { text: "Permutaciones y sustituciones de bloques de bits" },
+    ],
+    correct: 2,
+    explanation: "<strong>c) Factorización de primos.</strong> RSA se basa en que multiplicar dos números primos grandes es computacionalmente fácil, pero factorizar el producto (encontrar los factores primos) es extremadamente difícil con la tecnología actual. ECC usa curvas elípticas; Diffie-Hellman usa logaritmo discreto."
+  },
+  {
+    cat: "cripto-asi",
+    q: "¿Qué es la <strong>criptografía híbrida</strong> y dónde se usa?",
+    options: [
+      { text: "Combina hash y cifrado para garantizar confidencialidad e integridad al mismo tiempo" },
+      { text: "Usa criptografía asimétrica para intercambiar la clave y simétrica para cifrar los datos — más rápida que asimétrica pura. Usada en HTTPS/TLS" },
+      { text: "Cifra dos veces: primero con clave pública y luego con clave privada" },
+      { text: "Combina dos algoritmos simétricos distintos para mayor seguridad" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) Asimétrica para clave + simétrica para datos.</strong> La asimétrica es hasta 1000× más lenta que la simétrica. HTTPS/TLS usa híbrida: Diffie-Hellman/RSA para acordar la clave de sesión (asimétrico) → AES para cifrar todos los datos (simétrico). Lo mejor de ambos mundos."
+  },
+
+  // ══════════════════════════════════════════════════════════
+  // AUTENTICACIÓN
+  // ══════════════════════════════════════════════════════════
+  {
+    cat: "auth",
+    q: "Un banco pide tu contraseña (factor 1) y luego envía un código por SMS a tu celular (factor 2). ¿A qué factor pertenece el SMS?",
+    options: [
+      { text: "Algo que SABES — porque es información que recibís" },
+      { text: "Algo que TIENES — el celular es un objeto físico en tu posesión" },
+      { text: "Algo que ERES — el número de celular es tuyo" },
+      { text: "No es un factor de autenticación válido" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) Algo que TENÉS.</strong> El celular es un objeto físico. El SMS llega a ese dispositivo — un atacante necesitaría tener físicamente tu teléfono para interceptarlo. Los 3 factores: SABES (contraseña/PIN), TENÉS (teléfono/token/tarjeta), ERES (huella/iris/rostro)."
+  },
+  {
+    cat: "auth",
+    q: "¿Cuál es la <strong>diferencia</strong> entre autenticación y autorización?",
+    options: [
+      { text: "Son sinónimos — ambos verifican si tenés permiso de acceso" },
+      { text: "Autenticación verifica QUIÉN sos. Autorización define QUÉ podés hacer una vez autenticado" },
+      { text: "Autenticación es para usuarios; autorización es para sistemas" },
+      { text: "La autenticación ocurre después de la autorización" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) QUIÉN sos vs QUÉ podés hacer.</strong> Autenticación: '¿Eres realmente el usuario 'guido'?' (verificar identidad). Autorización: '¿Puede 'guido' leer la carpeta /admin?' (permisos). Primero autenticás, luego el sistema verifica qué tenés autorizado."
+  },
+  {
+    cat: "auth",
+    q: "La biometría (huella dactilar, reconocimiento facial) es el factor de autenticación más fuerte. ¿Cuál es su principal desventaja?",
+    options: [
+      { text: "Es el más lento de los tres factores" },
+      { text: "Si se compromete, no se puede resetear — no podés cambiar tu huella como cambiarías una contraseña" },
+      { text: "Solo funciona en dispositivos de gama alta" },
+      { text: "Requiere conexión a internet para verificar la identidad" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) No se puede resetear.</strong> Si roban tu contraseña, la cambiás. Si pierden tu token, pedís uno nuevo. Si comprometen tu huella dactilar o iris, no podés 'cambiarlos'. Por eso la biometría NUNCA debe usarse como factor único — siempre combinada con otro factor."
+  },
+  {
+    cat: "auth",
+    q: "¿Por qué el protocolo <strong>Kerberos</strong> nunca envía contraseñas por la red?",
+    options: [
+      { text: "Porque cifra las contraseñas con AES antes de enviarlas" },
+      { text: "Porque usa tickets de tiempo limitado: el KDC verifica la contraseña localmente y emite un TGT. Las comunicaciones posteriores usan ese ticket, nunca la contraseña" },
+      { text: "Porque almacena las contraseñas en el cliente y nunca las transfiere" },
+      { text: "Porque usa hashing unidireccional en tránsito" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) Tickets de tiempo limitado.</strong> El cliente prueba su identidad al KDC localmente. El KDC emite un TGT (Ticket Granting Ticket). El cliente usa ese TGT para pedir acceso a servicios — la contraseña nunca viaja por la red. Los tickets tienen TTL para prevenir ataques de replay."
+  },
+  {
+    cat: "auth",
+    q: "¿Qué es la <strong>autenticación adaptativa</strong>?",
+    options: [
+      { text: "Autenticación que se adapta al dispositivo (móvil, PC, tablet)" },
+      { text: "Sistema que evalúa el riesgo en tiempo real (ubicación, dispositivo, comportamiento) y ajusta el nivel de autenticación requerido" },
+      { text: "MFA que permite elegir qué factor usar según la preferencia del usuario" },
+      { text: "Autenticación sin contraseña basada solo en biometría" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) Evaluación de riesgo en tiempo real.</strong> Si iniciás sesión desde tu ciudad habitual con tu dispositivo de siempre → solo pide contraseña. Si iniciás desde otro país a las 3am con dispositivo desconocido → exige factor adicional. El sistema evalúa el contexto y aumenta los requisitos cuando detecta anomalías."
+  },
+  {
+    cat: "auth",
+    q: "¿Qué es el <strong>SSO (Single Sign-On)</strong>?",
+    options: [
+      { text: "Un sistema donde cada servicio requiere su propio usuario y contraseña para mayor seguridad" },
+      { text: "Autenticación única que otorga acceso a múltiples sistemas sin reautenticarse en cada uno" },
+      { text: "Un método de autenticación sin contraseña basado únicamente en biometría" },
+      { text: "Un protocolo para sincronizar contraseñas entre múltiples sistemas" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) Autenticación única, acceso múltiple.</strong> Con SSO iniciás sesión una vez y accedés a múltiples servicios (correo, ERP, CRM) sin volver a autenticarte. Kerberos implementa SSO en redes corporativas. OAuth/SAML para servicios web ('Iniciar sesión con Google')."
+  },
+
+  // ══════════════════════════════════════════════════════════
+  // AUDITORÍA
+  // ══════════════════════════════════════════════════════════
+  {
+    cat: "auditoria",
+    q: "¿Cuál es la diferencia principal entre <strong>monitoreo</strong> y <strong>auditoría</strong> de seguridad?",
+    options: [
+      { text: "El monitoreo es más caro pero más preciso que la auditoría" },
+      { text: "El monitoreo es en tiempo real (detectar y reaccionar ahora). La auditoría es histórica (verificar cumplimiento de un período pasado)" },
+      { text: "La auditoría ocurre durante el incidente; el monitoreo ocurre después" },
+      { text: "Son sinónimos — ambos revisan logs del sistema" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) Tiempo real vs histórico.</strong> Monitoreo: tablero del auto (velocidad actual, alertas en vivo). Auditoría: revisión técnica anual (¿se cumplieron las políticas en los últimos 12 meses?). Un SIEM es herramienta de monitoreo; una auditoría ISO 27001 es histórica y sistemática."
+  },
+  {
+    cat: "auditoria",
+    q: "Un firewall bloquea tráfico malicioso. ¿Qué tipo de control de seguridad es?",
+    options: [
+      { text: "Solo correctivo — recupera el sistema después del ataque" },
+      { text: "Solo detectivo — identifica y alerta sobre intentos maliciosos" },
+      { text: "Principalmente preventivo (bloquea el tráfico antes de que entre), pero también detectivo (registra intentos en logs)" },
+      { text: "Solo preventivo — no genera ningún tipo de registro" },
+    ],
+    correct: 2,
+    explanation: "<strong>c) Preventivo Y detectivo.</strong> Un mismo control puede tener múltiples funciones. El firewall es preventivo (bloquea tráfico antes de que entre) y detectivo (registra cada intento de acceso no autorizado en logs). Los IDS/IPS son principalmente detectivos pero pueden bloquear (correctivo)."
+  },
+  {
+    cat: "auditoria",
+    q: "¿Qué son los backups y a qué tipo de control de seguridad corresponden?",
+    options: [
+      { text: "Preventivos — evitan que los datos sean robados" },
+      { text: "Detectivos — alertan cuando los datos son modificados" },
+      { text: "Correctivos — permiten restaurar el sistema después de un incidente" },
+      { text: "Los backups no son un control de seguridad formal" },
+    ],
+    correct: 2,
+    explanation: "<strong>c) Correctivo.</strong> Los backups no previenen el incidente ni lo detectan — actúan después para reducir el impacto y recuperar el sistema. Son parte del DRP (Disaster Recovery Plan). Preventivo = MFA, cifrado. Detectivo = IDS, logs, SIEM."
+  },
+  {
+    cat: "auditoria",
+    q: "¿Cuáles son las 5 funciones del <strong>NIST Cybersecurity Framework</strong>?",
+    options: [
+      { text: "Planificar → Hacer → Verificar → Actuar → Mejorar" },
+      { text: "Identificar → Proteger → Detectar → Responder → Recuperar" },
+      { text: "Prevenir → Detectar → Contener → Erradicar → Recuperar" },
+      { text: "Analizar → Diseñar → Implementar → Operar → Mejorar" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) Identificar → Proteger → Detectar → Responder → Recuperar.</strong> El NIST CSF es un marco voluntario muy adoptado. Planificar-Hacer-Verificar-Actuar (PHVA) es el ciclo de ISO 27001. Prevenir-Detectar-Contener-Erradicar-Recuperar es el proceso de respuesta a incidentes (PICERL)."
+  },
+  {
+    cat: "auditoria",
+    q: "¿Cuál es el <strong>principio de independencia</strong> en auditoría de seguridad?",
+    options: [
+      { text: "La auditoría solo puede ser realizada por consultores externos — nunca internos" },
+      { text: "El auditor debe ser imparcial y libre de conflictos de interés. Quien audita no puede ser quien diseñó o implementó los controles auditados" },
+      { text: "Cada área de la organización debe auditarse a sí misma sin interferencia externa" },
+      { text: "La auditoría debe ser independiente del ciclo PHVA del SGSI" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) Imparcialidad y sin conflicto de interés.</strong> Si el mismo equipo que diseñó los controles los audita, podría pasar por alto sus propios errores. La independencia garantiza objetividad. Las auditorías externas (requeridas para certificación ISO 27001) maximizan este principio."
+  },
+  {
+    cat: "auditoria",
+    q: "La <strong>Ley 25.326</strong> en Argentina regula:",
+    options: [
+      { text: "El uso de criptografía en sistemas gubernamentales" },
+      { text: "Los requisitos de auditoría para empresas del sector financiero" },
+      { text: "La protección de datos personales — consentimiento, finalidad, calidad y seguridad. Autoridad de aplicación: AAIP" },
+      { text: "El estándar nacional de gestión de seguridad informática equivalente a ISO 27001" },
+    ],
+    correct: 2,
+    explanation: "<strong>c) Protección de datos personales.</strong> La Ley 25.326 define principios de Consentimiento (el titular debe autorizar el uso), Finalidad (solo para el propósito declarado), Calidad (datos exactos y actualizados) y Seguridad (medidas técnicas para protegerlos). La AAIP es la Agencia de Acceso a la Información Pública."
+  },
+  {
+    cat: "auditoria",
+    q: "¿Cuál es la diferencia entre <strong>privacidad de datos</strong> y <strong>seguridad de la información</strong>?",
+    options: [
+      { text: "Son exactamente lo mismo — se usan indistintamente" },
+      { text: "Seguridad aplica medidas técnicas (CIA). Privacidad es el derecho de las personas a controlar cómo se usan sus datos. Se puede tener una sin la otra" },
+      { text: "La privacidad es un subconjunto de la seguridad — no existen sin seguridad" },
+      { text: "La seguridad es un concepto legal; la privacidad es técnico" },
+    ],
+    correct: 1,
+    explanation: "<strong>b) Técnica vs derecho fundamental.</strong> Ejemplo: una empresa cifra perfectamente su base de datos (seguridad OK) pero vende los datos a terceros sin consentimiento (privacidad violada). O al revés: una empresa tiene política de privacidad clara pero sin controles técnicos (seguridad violada). Son complementarias pero distintas."
+  },
+
+];
+
+// ──────────────────────────────────────────────
+// ESTADO Y LÓGICA
+// ──────────────────────────────────────────────
+const state = new Array(questions.length).fill(null);
+let current = 0;
+let score   = 0;
+
+const CAT_LABELS = {
+  "cia":        "CIA Triad",
+  "riesgo":     "Gestión de Riesgo",
+  "cripto-sim": "Cripto Simétrica",
+  "cripto-asi": "Cripto Asimétrica",
+  "auth":       "Autenticación",
+  "auditoria":  "Auditoría",
+};
+
+function escHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function render(){
+  const q = questions[current];
+  const s = state[current];
+  const letters = ['a','b','c','d','e'];
+
+  const optionsHTML = q.options.map((opt,i)=>{
+    const content = opt.code
+      ? `<span class="text"><pre><code>${escHtml(opt.code)}</code></pre></span>`
+      : `<span class="text">${opt.text}</span>`;
+    let cls = 'option';
+    if(s !== null){
+      cls += ' disabled';
+      if(i === q.correct)          cls += ' correct';
+      else if(i === s.answeredIdx) cls += ' wrong';
+      else                          cls += ' dimmed';
+    }
+    const click = s === null ? `onclick="answer(${i})"` : '';
+    return `<div class="${cls}" ${click}><span class="letter">${letters[i]}</span>${content}</div>`;
+  }).join('');
+
+  let feedbackHTML = '';
+  if(s !== null){
+    const cls  = s.wasCorrect ? 'feedback show ok' : 'feedback show fail';
+    const icon = s.wasCorrect ? '✓ Correcto' : '✗ Incorrecto';
+    feedbackHTML = `<div class="${cls}"><strong>${icon}</strong>${q.explanation}</div>`;
+  }
+
+  const showNext = s !== null;
+  const showPrev = current > 0;
+  const isLast   = current === questions.length - 1;
+
+  document.getElementById('quiz-container').innerHTML = `
+    <div class="card">
+      <span class="badge ${q.cat}">${CAT_LABELS[q.cat]}</span>
+      <h2>${q.q}</h2>
+      <div class="options">${optionsHTML}</div>
+      ${feedbackHTML}
+      <div class="btn-row">
+        <button class="btn-prev ${showPrev?'show':''}" onclick="prev()">← Anterior</button>
+        <button class="btn-next ${showNext?'show':''}" onclick="next()">
+          ${isLast ? 'Ver resultado' : 'Siguiente →'}
+        </button>
+      </div>
+    </div>`;
+
+  updateProgress();
+  if(s !== null) window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function answer(idx){
+  if(state[current] !== null) return;
+  const wasCorrect = idx === questions[current].correct;
+  if(wasCorrect) score++;
+  state[current] = { answeredIdx:idx, wasCorrect };
+  render();
+}
+
+function next(){
+  if(current < questions.length - 1){ current++; render(); }
+  else showScore();
+}
+
+function prev(){
+  if(current > 0){ current--; render(); }
+}
+
+function updateProgress(){
+  const total    = questions.length;
+  const answered = state.filter(s=>s!==null).length;
+  document.getElementById('progress-fill').style.width = (answered/total*100)+'%';
+  document.getElementById('prog-text').textContent  = `Pregunta ${current+1} de ${total}`;
+  document.getElementById('score-text').textContent = `${score} correctas`;
+}
+
+function showScore(){
+  document.getElementById('quiz-container').style.display    = 'none';
+  document.getElementById('progress-bar-wrap').style.display = 'none';
+  const screen = document.getElementById('score-screen');
+  screen.style.display = 'block';
+  document.getElementById('final-score').textContent = `${score} / ${questions.length}`;
+
+  const cats = {};
+  questions.forEach((q,i)=>{
+    if(!cats[q.cat]) cats[q.cat] = {correct:0, total:0};
+    cats[q.cat].total++;
+    if(state[i]?.wasCorrect) cats[q.cat].correct++;
+  });
+  document.getElementById('breakdown').innerHTML = Object.entries(cats).map(([cat,v])=>
+    `<div class="breakdown-item"><span>${v.correct}/${v.total}</span>${CAT_LABELS[cat]}</div>`
+  ).join('');
+
+  const pct = score / questions.length;
+  let msg = '';
+  if     (pct===1)   msg='Perfecto. Dominás todos los temas del parcial.';
+  else if(pct>=0.85) msg='Muy bien. Repasá los que fallaste.';
+  else if(pct>=0.65) msg='Bien encaminado. Prestá atención a criptografía y controles de auditoría.';
+  else               msg='Seguí practicando — revisá CIA, gestión de riesgo y los factores de autenticación.';
+  document.getElementById('final-msg').textContent = msg;
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function restart(){
+  current = 0; score = 0; state.fill(null);
+  document.getElementById('quiz-container').style.display    = 'block';
+  document.getElementById('progress-bar-wrap').style.display = 'block';
+  document.getElementById('score-screen').style.display      = 'none';
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
