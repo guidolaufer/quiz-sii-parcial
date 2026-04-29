@@ -3,1030 +3,519 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Quiz — Seguridad e Integridad de la Información</title>
+  <title>Quiz — Seguridad e Integridad</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    /* ── RESET ── */
+    *, *::before, *::after {
+      box-sizing: border-box; margin: 0; padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
 
+    /* ── TOKENS ── */
+    :root {
+      --bg:          #06090f;
+      --surface:     #0c1420;
+      --surface-hi:  #111d2e;
+      --border:      #1c2d42;
+      --border-hi:   #2c4460;
+      --text:        #d0e0f0;
+      --text-mid:    #7a9ab8;
+      --text-dim:    #3a5878;
+      --accent:      #00c8f8;
+      --accent-glow: rgba(0,200,248,0.12);
+      --green:       #00e87c;
+      --green-bg:    rgba(0,232,124,0.06);
+      --red:         #ff3355;
+      --red-bg:      rgba(255,51,85,0.06);
+      /* category */
+      --c-cia:        #00c8f8;
+      --c-riesgo:     #a78bfa;
+      --c-cripto-sim: #00e87c;
+      --c-cripto-asi: #34d399;
+      --c-auth:       #fbbf24;
+      --c-auditoria:  #fb7185;
+      --c-acceso:     #6ee7b7;
+      --c-fundamentos:#c084fc;
+    }
+
+    /* ── BASE ── */
     html { font-size: 16px; }
-
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #0f1117;
-      color: #e2e8f0;
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
-      padding: 1.25rem env(safe-area-inset-right, 0.75rem) 4rem env(safe-area-inset-left, 0.75rem);
-      padding-left: max(0.75rem, env(safe-area-inset-left));
-      padding-right: max(0.75rem, env(safe-area-inset-right));
+      overflow-x: hidden;
     }
 
-    header { text-align: center; margin-bottom: 1.5rem; }
+    /* ── GRID BACKGROUND ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,200,248,0.022) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,200,248,0.022) 1px, transparent 1px);
+      background-size: 52px 52px;
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ── STATUS BAR ── */
+    .status-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.5rem max(1rem, env(safe-area-inset-left)) 0.5rem max(1rem, env(safe-area-inset-right));
+      border-bottom: 1px solid var(--border);
+      background: rgba(6,9,15,0.96);
+      position: sticky; top: 0; z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+    .sys-id {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.62rem; color: var(--text-dim);
+      letter-spacing: 0.1em; text-transform: uppercase;
+    }
+    .sys-id em { color: var(--accent); font-style: normal; }
+    .status-indicator {
+      display: flex; align-items: center; gap: 0.4rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem; color: var(--green);
+      letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .status-dot {
+      width: 6px; height: 6px;
+      background: var(--green); border-radius: 50%;
+      animation: blink 2.5s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
+
+    /* ── MAIN WRAPPER ── */
+    .wrap {
+      position: relative; z-index: 1;
+      max-width: 720px; margin: 0 auto;
+      padding: 0 max(1rem, env(safe-area-inset-left))
+               max(5rem, calc(env(safe-area-inset-bottom) + 5rem))
+               max(1rem, env(safe-area-inset-right));
+    }
+
+    /* ── HEADER ── */
+    header {
+      padding: 2.5rem 0 2rem;
+      animation: rise 0.6s ease-out both;
+    }
+    .eyebrow {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.62rem; color: var(--accent);
+      letter-spacing: 0.15em; text-transform: uppercase;
+      margin-bottom: 0.65rem;
+    }
+    .eyebrow::before { content: '// '; opacity: 0.45; }
+
     header h1 {
-      font-size: clamp(1.15rem, 5.5vw, 1.7rem);
-      color: #7dd3fc; margin-bottom: 0.25rem; line-height: 1.3;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.2rem, 9vw, 3.5rem);
+      color: var(--text); letter-spacing: 0.04em; line-height: 0.95;
+      margin-bottom: 0.8rem;
     }
-    header p { color: #94a3b8; font-size: clamp(0.72rem, 3vw, 0.85rem); line-height: 1.5; }
+    header h1 span { color: var(--accent); }
 
-    #progress-bar-wrap { max-width: 680px; margin: 0 auto 1.25rem; }
-    #progress-label {
-      display: flex; justify-content: space-between;
-      font-size: 0.75rem; color: #64748b; margin-bottom: 0.35rem;
+    header p {
+      font-family: 'Space Mono', monospace;
+      font-size: clamp(0.58rem, 2.4vw, 0.68rem);
+      color: var(--text-dim); letter-spacing: 0.06em; line-height: 1.9;
     }
-    #progress-bar { height: 6px; background: #1e293b; border-radius: 99px; overflow: hidden; }
+
+    /* ── PROGRESS ── */
+    #progress-bar-wrap {
+      margin-bottom: 1.75rem;
+      animation: rise 0.6s 0.1s ease-out both;
+    }
+    #progress-label {
+      display: flex; justify-content: space-between; align-items: baseline;
+      margin-bottom: 0.55rem;
+    }
+    #prog-text {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.68rem; color: var(--text-mid); letter-spacing: 0.08em;
+    }
+    #score-text {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.68rem; color: var(--green); letter-spacing: 0.05em;
+    }
+    #progress-bar {
+      height: 2px; background: var(--surface-hi);
+      position: relative; overflow: visible;
+    }
     #progress-fill {
       height: 100%;
-      background: linear-gradient(90deg, #3b82f6, #7dd3fc);
-      border-radius: 99px; transition: width 0.4s ease; width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--green));
+      transition: width 0.55s cubic-bezier(0.4,0,0.2,1);
+      width: 0%; position: relative;
+    }
+    #progress-fill::after {
+      content: '';
+      position: absolute; right: 0; top: 50%;
+      transform: translate(50%,-50%);
+      width: 7px; height: 7px;
+      background: var(--accent); border-radius: 50%;
+      box-shadow: 0 0 10px var(--accent);
     }
 
+    /* ── CARD ── */
     .card {
-      background: #1e293b; border: 1px solid #334155;
-      border-radius: 14px;
-      padding: clamp(1rem, 4vw, 1.5rem);
-      max-width: 680px; margin: 0 auto 1rem;
-      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 2px; overflow: hidden;
+      margin-bottom: 1rem;
+      animation: rise 0.32s ease-out both;
+    }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-stripe {
+      height: 2px;
+      transition: background 0.3s;
+    }
+
+    .card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.7rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(0,0,0,0.25);
     }
 
     .badge {
-      display: inline-block; font-size: 0.65rem; font-weight: 700;
-      letter-spacing: 0.07em; text-transform: uppercase;
-      padding: 0.2rem 0.6rem; border-radius: 99px; margin-bottom: 0.85rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.58rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      display: flex; align-items: center; gap: 0.45rem;
     }
-    .badge.cia        { background: #1a3a5f; color: #93c5fd; }
-    .badge.riesgo     { background: #3b1f5e; color: #c4b5fd; }
-    .badge.cripto-sim { background: #14532d; color: #86efac; }
-    .badge.cripto-asi { background: #1e3a2f; color: #6ee7b7; }
-    .badge.auth       { background: #3b2a0f; color: #fcd34d; }
-    .badge.auditoria  { background: #3b1414; color: #fca5a5; }
-    .badge.acceso     { background: #1a3020; color: #a7f3d0; }
-    .badge.fundamentos{ background: #2a1f3b; color: #e9d5ff; }
+    .badge::before { content: '●'; font-size: 0.42rem; }
+
+    .badge.cia         { color: var(--c-cia); }
+    .badge.riesgo      { color: var(--c-riesgo); }
+    .badge.cripto-sim  { color: var(--c-cripto-sim); }
+    .badge.cripto-asi  { color: var(--c-cripto-asi); }
+    .badge.auth        { color: var(--c-auth); }
+    .badge.auditoria   { color: var(--c-auditoria); }
+    .badge.acceso      { color: var(--c-acceso); }
+    .badge.fundamentos { color: var(--c-fundamentos); }
+
+    .q-counter {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.58rem; color: var(--text-dim); letter-spacing: 0.1em;
+    }
+
+    .card-body {
+      padding: 1.25rem 1.25rem 0.5rem;
+    }
 
     .card h2 {
-      font-size: clamp(0.9rem, 3.8vw, 1.05rem);
-      line-height: 1.65; margin-bottom: 1rem; color: #f1f5f9;
-      word-break: break-word;
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(0.95rem, 3.8vw, 1.08rem);
+      font-weight: 500; line-height: 1.65;
+      color: var(--text); word-break: break-word;
     }
 
     pre {
-      background: #0f172a; border: 1px solid #263148;
-      border-radius: 8px;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      padding: 0.7rem 0.85rem;
-      font-size: clamp(0.65rem, 2.5vw, 0.78rem);
-      line-height: 1.6; color: #e2e8f0;
-      margin-bottom: 0;
-      white-space: pre;
-      word-break: normal;
-      max-width: 100%;
+      background: rgba(0,0,0,0.45);
+      border: 1px solid var(--border); border-radius: 2px;
+      overflow-x: auto; -webkit-overflow-scrolling: touch;
+      padding: 0.75rem 1rem;
+      font-size: clamp(0.62rem,2.5vw,0.74rem);
+      line-height: 1.7; color: var(--accent);
+      margin-bottom: 0; white-space: pre;
+      word-break: normal; max-width: 100%;
     }
-    code { font-family: ui-monospace, 'Cascadia Code', 'Fira Code', monospace; }
-
+    code { font-family: 'Space Mono', ui-monospace, monospace; }
     h2 code, .feedback code, .text code {
-      background: #1e293b; border: 1px solid #334155;
-      border-radius: 4px; padding: 0.1em 0.35em;
-      font-size: 0.88em; color: #93c5fd;
+      background: rgba(0,200,248,0.07);
+      border: 1px solid rgba(0,200,248,0.18);
+      border-radius: 2px; padding: 0.1em 0.35em;
+      font-size: 0.85em; color: var(--accent);
       word-break: break-all;
+      font-family: 'Space Mono', monospace;
     }
 
-    .options { display: flex; flex-direction: column; gap: 0.55rem; }
+    /* ── OPTIONS ── */
+    .options {
+      display: flex; flex-direction: column; gap: 0.42rem;
+      padding: 1rem 1.25rem 0.75rem;
+    }
 
     .option {
-      display: flex; align-items: flex-start; gap: 0.75rem;
-      background: #0f172a; border: 1.5px solid #334155;
-      border-radius: 10px;
-      padding: clamp(0.65rem, 2.5vw, 0.85rem) clamp(0.7rem, 2.5vw, 0.9rem);
+      display: flex; align-items: flex-start; gap: 0.8rem;
+      background: transparent;
+      border: 1px solid var(--border); border-radius: 2px;
+      padding: clamp(0.65rem,2.5vw,0.8rem) clamp(0.75rem,2.5vw,0.9rem);
       cursor: pointer;
-      transition: border-color 0.15s, background 0.15s;
-      user-select: none;
-      min-width: 0;
-      overflow: hidden;
+      transition: border-color 0.14s, background 0.14s;
+      user-select: none; min-width: 0; position: relative; overflow: hidden;
     }
-    .option:active:not(.disabled) { background: #172033; border-color: #3b82f6; }
+    .option::after {
+      content: '';
+      position: absolute; left: 0; top: 0; bottom: 0;
+      width: 2px; background: var(--accent);
+      transform: scaleY(0); transform-origin: center;
+      transition: transform 0.14s ease;
+    }
     @media (hover: hover) {
-      .option:hover:not(.disabled) { border-color: #3b82f6; background: #172033; }
+      .option:hover:not(.disabled) {
+        border-color: var(--border-hi);
+        background: var(--surface-hi);
+      }
+      .option:hover:not(.disabled)::after { transform: scaleY(1); }
+      .option:hover:not(.disabled) .letter {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .option:hover:not(.disabled) .text { color: var(--text); }
+    }
+    .option:active:not(.disabled) {
+      background: var(--surface-hi);
     }
 
     .option .letter {
-      flex-shrink: 0;
-      width: 28px; height: 28px; border-radius: 50%;
-      background: #1e293b; border: 1.5px solid #475569;
+      flex-shrink: 0; width: 24px; height: 24px;
+      border: 1px solid var(--border-hi);
+      background: rgba(0,0,0,0.3);
       display: flex; align-items: center; justify-content: center;
-      font-size: 0.75rem; font-weight: 700; color: #94a3b8;
-      transition: all 0.15s;
-      min-width: 28px;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem; font-weight: 700; color: var(--text-dim);
+      transition: all 0.14s; min-width: 24px;
+      border-radius: 0; margin-top: 1px;
     }
 
     .option .text {
-      font-size: clamp(0.82rem, 3.2vw, 0.88rem);
-      line-height: 1.55; color: #cbd5e1;
-      min-width: 0; flex: 1; word-break: break-word;
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(0.82rem,3.2vw,0.9rem);
+      font-weight: 400; line-height: 1.55;
+      color: var(--text-mid); min-width: 0; flex: 1;
+      word-break: break-word; transition: color 0.14s;
     }
     .option .text pre {
       margin-top: 0.4rem;
-      font-size: clamp(0.6rem, 2.3vw, 0.73rem);
+      font-size: clamp(0.6rem,2.3vw,0.72rem);
       white-space: pre-wrap; word-break: break-all; overflow-x: visible;
     }
 
-    .option.correct         { border-color: #22c55e; background: #052e16; }
-    .option.correct .letter { background: #22c55e; border-color: #22c55e; color: #fff; }
-    .option.wrong           { border-color: #ef4444; background: #2d0a0a; }
-    .option.wrong .letter   { background: #ef4444; border-color: #ef4444; color: #fff; }
-    .option.dimmed          { opacity: 0.35; }
-    .option.disabled        { cursor: default; }
+    /* ── OPTION STATES ── */
+    .option.correct {
+      border-color: var(--green); background: var(--green-bg);
+    }
+    .option.correct::after { background: var(--green); transform: scaleY(1); }
+    .option.correct .letter {
+      background: var(--green); border-color: var(--green); color: var(--bg);
+    }
+    .option.correct .text { color: rgba(0,232,124,0.9); }
 
+    .option.wrong {
+      border-color: var(--red); background: var(--red-bg);
+    }
+    .option.wrong::after { background: var(--red); transform: scaleY(1); }
+    .option.wrong .letter {
+      background: var(--red); border-color: var(--red); color: #fff;
+    }
+    .option.wrong .text { color: rgba(255,80,110,0.9); }
+
+    .option.dimmed { opacity: 0.22; }
+    .option.disabled { cursor: default; }
+
+    /* ── FEEDBACK ── */
     .feedback {
-      display: none; margin-top: 0.9rem;
-      padding: clamp(0.75rem, 3vw, 1rem);
-      border-radius: 10px;
-      font-size: clamp(0.8rem, 3vw, 0.87rem); line-height: 1.65;
+      display: none; margin: 0 1.25rem 0.5rem;
+      padding: 0.85rem 1rem;
+      border-radius: 2px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(0.8rem,3vw,0.87rem); line-height: 1.65;
       word-break: break-word;
     }
     .feedback.show { display: block; }
-    .feedback.ok   { background: #052e16; border: 1px solid #16a34a; color: #86efac; }
-    .feedback.fail { background: #2d0a0a; border: 1px solid #dc2626; color: #fca5a5; }
-    .feedback strong { display: block; margin-bottom: 0.3rem; font-size: 0.92rem; }
+    .feedback.ok {
+      background: var(--green-bg);
+      border: 1px solid rgba(0,232,124,0.2);
+      border-left: 2px solid var(--green);
+      color: rgba(180,255,220,0.85);
+    }
+    .feedback.fail {
+      background: var(--red-bg);
+      border: 1px solid rgba(255,51,85,0.2);
+      border-left: 2px solid var(--red);
+      color: rgba(255,160,175,0.9);
+    }
+    .feedback strong {
+      display: block; margin-bottom: 0.4rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase;
+    }
+    .feedback.ok strong   { color: var(--green); }
+    .feedback.fail strong { color: var(--red); }
 
-    .btn-row { display: flex; gap: 0.6rem; margin-top: 1rem; }
+    /* ── BUTTONS ── */
+    .btn-row {
+      display: flex; gap: 0.5rem;
+      padding: 0.75rem 1.25rem 1.25rem;
+    }
 
     .btn-prev {
       flex: 0 0 auto;
-      padding: 0.8rem 1rem;
-      background: #1e293b; color: #94a3b8;
-      border: 1.5px solid #334155; border-radius: 10px;
-      font-size: clamp(0.82rem, 3vw, 0.92rem); font-weight: 600;
+      padding: 0.72rem 1rem;
+      background: transparent; color: var(--text-dim);
+      border: 1px solid var(--border); border-radius: 2px;
+      font-family: 'Space Mono', monospace;
+      font-size: clamp(0.62rem,2.5vw,0.7rem);
+      font-weight: 700; letter-spacing: 0.06em;
       cursor: pointer; display: none;
-      min-height: 48px; touch-action: manipulation;
+      min-height: 44px; touch-action: manipulation;
+      transition: color 0.14s, border-color 0.14s;
     }
-    .btn-prev:active { background: #273548; }
-    .btn-prev.show { display: block; }
+    .btn-prev:hover { color: var(--text-mid); border-color: var(--border-hi); }
+    .btn-prev.show  { display: block; }
 
     .btn-next {
       flex: 1;
-      padding: 0.8rem;
-      background: #3b82f6; color: #fff;
-      border: none; border-radius: 10px;
-      font-size: clamp(0.82rem, 3vw, 0.92rem); font-weight: 600;
+      padding: 0.72rem;
+      background: var(--accent); color: var(--bg);
+      border: none; border-radius: 2px;
+      font-family: 'Space Mono', monospace;
+      font-size: clamp(0.62rem,2.5vw,0.7rem);
+      font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
       cursor: pointer; display: none;
-      min-height: 48px; touch-action: manipulation;
+      min-height: 44px; touch-action: manipulation;
+      transition: opacity 0.14s, box-shadow 0.14s;
     }
-    .btn-next:active { background: #2563eb; }
-    .btn-next.show { display: block; }
+    .btn-next:hover  { opacity: 0.88; box-shadow: 0 0 18px rgba(0,200,248,0.3); }
+    .btn-next:active { opacity: 0.72; }
+    .btn-next.show   { display: block; }
 
+    /* ── SCORE SCREEN ── */
     #score-screen {
-      display: none; text-align: center;
-      max-width: 680px; margin: 0 auto;
-      background: #1e293b; border: 1px solid #334155;
-      border-radius: 14px; padding: clamp(1.5rem, 5vw, 2.5rem) clamp(1rem, 4vw, 1.5rem);
-      width: 100%;
+      display: none;
+      animation: rise 0.4s ease-out both;
     }
-    #score-screen h2  { font-size: clamp(1.2rem, 5vw, 1.4rem); color: #7dd3fc; margin-bottom: 0.4rem; }
-    #score-screen .big {
-      font-size: clamp(2.8rem, 12vw, 3.5rem); font-weight: 800;
-      color: #f1f5f9; margin: 0.6rem 0;
+    .score-card {
+      background: var(--surface);
+      border: 1px solid var(--border); border-radius: 2px; overflow: hidden;
     }
-    #score-screen p { color: #94a3b8; margin-bottom: 1.25rem; font-size: clamp(0.85rem, 3vw, 0.92rem); }
+    .score-stripe {
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--green));
+    }
+    .score-inner {
+      padding: clamp(2rem,5vw,3rem) clamp(1.25rem,4vw,2rem);
+      text-align: center;
+    }
+    .score-eyebrow {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.62rem; color: var(--text-dim);
+      letter-spacing: 0.15em; text-transform: uppercase;
+      margin-bottom: 0.6rem;
+    }
+    .score-eyebrow::before { content: '// '; opacity: 0.45; }
+
+    #score-screen h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(1.6rem,6vw,2.2rem);
+      color: var(--text); letter-spacing: 0.05em; margin-bottom: 0.3rem;
+    }
+    .big {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(4rem,16vw,6.5rem);
+      line-height: 1; color: var(--accent);
+      letter-spacing: 0.04em; margin: 0.2rem 0 0.7rem;
+      text-shadow: 0 0 50px rgba(0,200,248,0.25);
+    }
+    #final-msg {
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(0.85rem,3vw,0.95rem);
+      color: var(--text-mid); line-height: 1.65;
+      margin: 0 auto 2rem; max-width: 420px;
+    }
 
     .breakdown {
-      display: flex; justify-content: center; gap: 0.6rem;
-      flex-wrap: wrap; margin-bottom: 1.25rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(128px,1fr));
+      gap: 0.45rem; margin-bottom: 2rem; text-align: left;
     }
     .breakdown-item {
-      background: #0f172a; border: 1px solid #334155; border-radius: 10px;
-      padding: 0.55rem 0.9rem; font-size: 0.78rem; color: #94a3b8;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border); border-radius: 2px;
+      padding: 0.65rem 0.85rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.74rem; color: var(--text-dim);
     }
     .breakdown-item span {
-      display: block; font-size: 1.15rem; font-weight: 700;
-      color: #f1f5f9; margin-bottom: 0.1rem;
+      display: block;
+      font-family: 'Space Mono', monospace;
+      font-size: 1.05rem; font-weight: 700;
+      color: var(--text); margin-bottom: 0.2rem;
     }
 
     .btn-restart {
-      padding: 0.8rem 2rem; background: #3b82f6; color: #fff;
-      border: none; border-radius: 10px;
-      font-size: clamp(0.9rem, 3.5vw, 1rem); font-weight: 600;
+      padding: 0.85rem 2.5rem;
+      background: transparent; color: var(--accent);
+      border: 1px solid var(--accent); border-radius: 2px;
+      font-family: 'Space Mono', monospace;
+      font-size: clamp(0.68rem,2.5vw,0.76rem);
+      font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
       cursor: pointer; min-height: 48px; touch-action: manipulation;
-      width: 100%; max-width: 280px;
+      transition: background 0.14s, box-shadow 0.14s;
     }
-    .btn-restart:active { background: #2563eb; }
+    .btn-restart:hover {
+      background: var(--accent-glow);
+      box-shadow: 0 0 20px rgba(0,200,248,0.15);
+    }
   </style>
 </head>
 <body>
 
-<header>
-  <h1>Quiz — Seguridad e Integridad de la Información</h1>
-  <p>CIA Triad · Gestión de Riesgo · Criptografía · Autenticación · Auditoría</p>
-</header>
+<div class="status-bar">
+  <span class="sys-id">SIS/<em>SEG·INFO</em> · v2.5</span>
+  <span class="status-indicator">
+    <span class="status-dot"></span>
+    Sistema activo
+  </span>
+</div>
 
-<div id="progress-bar-wrap">
-  <div id="progress-label">
-    <span id="prog-text">Pregunta 1</span>
-    <span id="score-text">0 correctas</span>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Módulo de evaluación</div>
+    <h1>Seguridad<br>e <span>Integridad</span></h1>
+    <p>CIA TRIAD · GESTIÓN DE RIESGO · CRIPTOGRAFÍA · AUTENTICACIÓN · AUDITORÍA</p>
+  </header>
+
+  <div id="progress-bar-wrap">
+    <div id="progress-label">
+      <span id="prog-text">Pregunta 1</span>
+      <span id="score-text">0 correctas</span>
+    </div>
+    <div id="progress-bar"><div id="progress-fill"></div></div>
   </div>
-  <div id="progress-bar"><div id="progress-fill"></div></div>
-</div>
 
-<div id="quiz-container"></div>
+  <div id="quiz-container"></div>
 
-<div id="score-screen">
-  <h2>Resultado final</h2>
-  <div class="big" id="final-score"></div>
-  <p id="final-msg"></p>
-  <div class="breakdown" id="breakdown"></div>
-  <button class="btn-restart" onclick="restart()">Volver a intentar</button>
-</div>
+  <div id="score-screen">
+    <div class="score-card">
+      <div class="score-stripe"></div>
+      <div class="score-inner">
+        <div class="score-eyebrow">Evaluación completada</div>
+        <h2>Resultado Final</h2>
+        <div class="big" id="final-score"></div>
+        <p id="final-msg"></p>
+        <div class="breakdown" id="breakdown"></div>
+        <button class="btn-restart" onclick="restart()">Reintentar evaluación</button>
+      </div>
+    </div>
+  </div>
 
+</div><!-- .wrap -->
+
+<script src="preguntas_seguridad.js"></script>
 <script>
-const questions = [
-
-  // ══════════════════════════════════════════════════════════
-  // CIA TRIAD
-  // ══════════════════════════════════════════════════════════
-  {
-    cat: "cia",
-    q: "¿Cuál de los pilares de la Triada CIA garantiza que solo las personas autorizadas pueden acceder a la información?",
-    options: [
-      { text: "Disponibilidad" },
-      { text: "Integridad" },
-      { text: "Confidencialidad" },
-      { text: "Autenticidad" },
-    ],
-    correct: 2,
-    explanation: "<strong>c) Confidencialidad.</strong> Garantiza que solo quienes están autorizados pueden acceder a la información. Se viola con filtraciones de datos o accesos no autorizados. Se protege con cifrado AES-256, MFA y control de acceso."
-  },
-  {
-    cat: "cia",
-    q: "Un atacante modifica silenciosamente registros en una base de datos. ¿Cuál pilar de la Triada CIA fue violado?",
-    options: [
-      { text: "Confidencialidad — los datos fueron expuestos" },
-      { text: "Integridad — los datos fueron alterados sin autorización" },
-      { text: "Disponibilidad — el sistema quedó fuera de servicio" },
-      { text: "No viola ningún pilar — fue una modificación interna" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) Integridad.</strong> La integridad garantiza que la información no pueda ser modificada sin autorización. Un atacante que altera registros viola este pilar. Se protege con hashes SHA-256, firmas digitales y logs de auditoría."
-  },
-  {
-    cat: "cia",
-    q: "Un ataque de ransomware cifra todos los servidores de una empresa y los deja inaccesibles. ¿Qué pilar de la Triada CIA es el más afectado?",
-    options: [
-      { text: "Confidencialidad — los datos podrían ser expuestos" },
-      { text: "Integridad — los datos fueron modificados" },
-      { text: "Disponibilidad — los sistemas no están operativos cuando se necesitan" },
-      { text: "Los tres pilares por igual" },
-    ],
-    correct: 2,
-    explanation: "<strong>c) Disponibilidad.</strong> La disponibilidad garantiza que los sistemas estén operativos cuando se necesiten. Un ransomware que los deja inaccesibles la viola directamente. Se mitiga con backups, redundancia y planes de recuperación (DRP)."
-  },
-  {
-    cat: "cia",
-    q: "En entornos OT (tecnologías operativas como SCADA o PLCs), ¿cuál pilar de la CIA tiene mayor prioridad respecto a IT?",
-    options: [
-      { text: "Confidencialidad, porque los datos industriales son secretos comerciales" },
-      { text: "Integridad, porque los procesos físicos requieren datos precisos" },
-      { text: "Disponibilidad, porque una interrupción puede causar daños físicos o pérdida de vidas" },
-      { text: "La priorización es idéntica a IT" },
-    ],
-    correct: 2,
-    explanation: "<strong>c) Disponibilidad.</strong> En OT (PLCs, SCADA, sensores industriales), una interrupción no implica solo pérdida económica sino riesgos físicos reales: accidentes en plantas, cortes de energía en hospitales. Cero tolerancia a downtime. En IT la prioridad es Confidencialidad."
-  },
-  {
-    cat: "cia",
-    q: "¿Cuál de las siguientes medidas protege principalmente la <strong>Integridad</strong> de la información?",
-    options: [
-      { text: "Cifrado AES-256 de los archivos almacenados" },
-      { text: "Sistemas de backups automáticos diarios" },
-      { text: "Hash SHA-256 para verificar que un archivo no fue modificado" },
-      { text: "MFA para el acceso al sistema" },
-    ],
-    correct: 2,
-    explanation: "<strong>c) Hash SHA-256.</strong> El hash permite verificar que un archivo no fue alterado: si el hash calculado coincide con el hash original, la integridad está intacta. AES-256 protege confidencialidad. Los backups protegen disponibilidad. MFA protege autenticación."
-  },
-
-  // ══════════════════════════════════════════════════════════
-  // GESTIÓN DE RIESGO
-  // ══════════════════════════════════════════════════════════
-  {
-    cat: "riesgo",
-    q: "¿Cuál de los siguientes componentes representa una debilidad interna que puede ser explotada por una amenaza?",
-    options: [
-      { text: "Activo" },
-      { text: "Amenaza" },
-      { text: "Vulnerabilidad" },
-      { text: "Impacto" },
-    ],
-    correct: 2,
-    explanation: "<strong>c) Vulnerabilidad.</strong> La vulnerabilidad es la debilidad explotable (ej: software sin parchear, contraseñas débiles, falta de MFA). La amenaza es quien o qué puede causar daño. Sin vulnerabilidad, la amenaza no puede materializarse."
-  },
-  {
-    cat: "riesgo",
-    q: "Una empresa decide no almacenar números de tarjetas de crédito de sus clientes para evitar que sean robados. ¿Qué estrategia de tratamiento del riesgo está aplicando?",
-    options: [
-      { text: "Mitigar — redujo el impacto potencial con un control técnico" },
-      { text: "Transferir — delegó la responsabilidad a un tercero" },
-      { text: "Evitar — eliminó la actividad que genera el riesgo" },
-      { text: "Aceptar — decidió convivir con el riesgo" },
-    ],
-    correct: 2,
-    explanation: "<strong>c) Evitar.</strong> Al no almacenar los datos, elimina directamente la actividad que crea el riesgo. Si los datos no existen, no pueden ser robados. Esta estrategia se usa cuando el riesgo es inaceptable y no hay forma viable de mitigarlo suficientemente."
-  },
-  {
-    cat: "riesgo",
-    q: "Una universidad contrata un ciberseguro para cubrirse ante posibles ataques. ¿Qué estrategia de riesgo aplica?",
-    options: [
-      { text: "Evitar" },
-      { text: "Transferir" },
-      { text: "Mitigar" },
-      { text: "Aceptar" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) Transferir.</strong> El ciberseguro delega la consecuencia económica a un tercero (la aseguradora). El riesgo no desaparece — si ocurre el incidente, la aseguradora absorbe el costo. También aplica cuando se usa un proveedor cloud certificado."
-  },
-  {
-    cat: "riesgo",
-    q: "Dado un activo crítico con probabilidad ALTA de ser atacado e impacto ALTO en caso de concretarse, ¿cómo clasifica la Matriz de Riesgo 3×3 a este riesgo?",
-    options: [
-      { text: "Bajo — se acepta y se monitorea rutinariamente" },
-      { text: "Medio — se prepara un plan de contingencia" },
-      { text: "Alto — requiere atención prioritaria" },
-      { text: "Crítico — requiere atención inmediata e inaplazable" },
-    ],
-    correct: 3,
-    explanation: "<strong>d) Crítico.</strong> En la Matriz 3×3, Alta Probabilidad × Alto Impacto = celda Crítica (🔴). Requiere atención inmediata. Alta Probabilidad × Medio Impacto = Alto. Media Probabilidad × Alto Impacto = Alto. Solo Baja Probabilidad + Bajo Impacto = Verde."
-  },
-  {
-    cat: "riesgo",
-    q: "¿Cuál es la norma ISO de la familia 27000 que define los requisitos del SGSI y es <strong>certificable</strong>?",
-    options: [
-      { text: "ISO 27002 — Código de buenas prácticas de controles" },
-      { text: "ISO 27005 — Gestión de riesgos de seguridad" },
-      { text: "ISO 27001 — Requisitos del SGSI" },
-      { text: "ISO 27000 — Vocabulario y definiciones generales" },
-    ],
-    correct: 2,
-    explanation: "<strong>c) ISO 27001.</strong> Es la única certificable de la familia. Define los requisitos del SGSI con el ciclo PHVA. ISO 27002 provee controles (complementaria, no certificable). ISO 27005 es para gestión de riesgos. Las organizaciones se certifican en ISO 27001."
-  },
-  {
-    cat: "riesgo",
-    q: "En el ciclo PHVA del SGSI, ¿qué sucede en la fase <strong>Verificar</strong>?",
-    options: [
-      { text: "Se identifican activos y se define el alcance del SGSI" },
-      { text: "Se implementan los controles técnicos y se capacita al personal" },
-      { text: "Se mide el desempeño, se realizan auditorías internas y se monitorean incidentes" },
-      { text: "Se toman medidas correctivas para mejorar continuamente" },
-    ],
-    correct: 2,
-    explanation: "<strong>c) Verificar.</strong> Planificar (identificar, analizar riesgos) → Hacer (implementar controles) → <em>Verificar</em> (medir, auditar, monitorear) → Actuar (corregir y mejorar). El ciclo se repite continuamente."
-  },
-  {
-    cat: "riesgo",
-    q: "La fórmula del riesgo es: Riesgo = Probabilidad × Impacto. ¿De qué depende la Probabilidad?",
-    options: [
-      { text: "Solo de la fortaleza del atacante" },
-      { text: "De la Amenaza y la Vulnerabilidad" },
-      { text: "Del valor del activo" },
-      { text: "Del costo del control de seguridad aplicado" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) Amenaza × Vulnerabilidad.</strong> Probabilidad = Amenaza × Vulnerabilidad. Sin vulnerabilidad (debilidad explotable), la amenaza no puede materializarse → probabilidad cae a cero. Mitigar vulnerabilidades reduce la probabilidad de ocurrencia."
-  },
-
-  // ══════════════════════════════════════════════════════════
-  // CRIPTOGRAFÍA SIMÉTRICA
-  // ══════════════════════════════════════════════════════════
-  {
-    cat: "cripto-sim",
-    q: "¿Cuál es la característica fundamental que define a la criptografía <strong>simétrica</strong>?",
-    options: [
-      { text: "Usa una clave pública para cifrar y una privada para descifrar" },
-      { text: "Usa la misma clave para cifrar y descifrar" },
-      { text: "No usa claves — la seguridad está en el algoritmo" },
-      { text: "Genera una clave nueva para cada mensaje" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) Misma clave.</strong> La criptografía simétrica usa una única clave compartida entre emisor y receptor. Es muy rápida para grandes volúmenes de datos, pero tiene el problema de distribución segura de claves: ¿cómo compartir la clave sin que un atacante la intercepte?"
-  },
-  {
-    cat: "cripto-sim",
-    q: "¿Cuál algoritmo simétrico es el estándar actual para cifrado de datos?",
-    options: [
-      { text: "DES — Data Encryption Standard" },
-      { text: "3DES — Triple DES" },
-      { text: "AES — Advanced Encryption Standard" },
-      { text: "MD5 — Message Digest 5" },
-    ],
-    correct: 2,
-    explanation: "<strong>c) AES.</strong> AES (especialmente AES-256) es el estándar actual. DES fue declarado obsoleto en 2005 (clave 56 bits, roto en 56 horas en 1998). 3DES es legado (lento, retirado en 2023). MD5 es una función hash, no un algoritmo de cifrado."
-  },
-  {
-    cat: "cripto-sim",
-    q: "¿Cuál es la diferencia fundamental entre una función <strong>hash</strong> y el <strong>cifrado</strong>?",
-    options: [
-      { text: "El hash es más lento que el cifrado" },
-      { text: "El hash es unidireccional (no se puede revertir, no hay clave). El cifrado es bidireccional (se descifra con la clave)" },
-      { text: "El hash usa clave pública; el cifrado usa clave privada" },
-      { text: "No hay diferencia — son términos intercambiables" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) Unidireccional vs bidireccional.</strong> Un hash es una 'huella digital' del dato: no hay clave, no se puede revertir. Si alguien te da un hash, no podés obtener el dato original. El cifrado sí se puede revertir si tenés la clave. Esta distinción es crítica en el examen."
-  },
-  {
-    cat: "cripto-sim",
-    q: "¿Qué es el <strong>efecto avalancha</strong> en las funciones hash?",
-    options: [
-      { text: "Que el hash crece en tamaño a medida que el input es más largo" },
-      { text: "Que un mínimo cambio en el input (una letra, un bit) produce un hash completamente diferente" },
-      { text: "Que el hash puede producir el mismo resultado para dos inputs diferentes" },
-      { text: "Que calcular el hash requiere mucho poder de cómputo" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) Cambio mínimo → hash totalmente distinto.</strong> Si cambio 'hola' por 'Hola', el SHA-256 resultante es completamente diferente. Esto garantiza que cualquier modificación, por pequeña que sea, es detectable comparando los hashes."
-  },
-  {
-    cat: "cripto-sim",
-    q: "¿Para qué sirve el <strong>salt</strong> en el contexto del hash de contraseñas?",
-    options: [
-      { text: "Para acelerar el cálculo del hash" },
-      { text: "Para que el hash sea reversible en caso de recuperación de cuenta" },
-      { text: "Para evitar ataques de Rainbow Table añadiendo un valor aleatorio único a cada contraseña antes de hashear" },
-      { text: "Para cifrar el hash con una clave adicional" },
-    ],
-    correct: 2,
-    explanation: "<strong>c) Evitar Rainbow Tables.</strong> Una Rainbow Table es una tabla precalculada de hashes de contraseñas comunes. El salt añade un valor aleatorio único por usuario antes de hashear, así dos usuarios con la misma contraseña tienen hashes distintos y las tablas precalculadas no sirven."
-  },
-  {
-    cat: "cripto-sim",
-    q: "¿Por qué <strong>MD5</strong> ya no debe usarse para almacenar contraseñas?",
-    options: [
-      { text: "Porque es demasiado lento para sistemas modernos" },
-      { text: "Porque produce hashes demasiado cortos (solo 64 bits)" },
-      { text: "Porque se demostró que es posible crear colisiones (dos entradas distintas con el mismo hash)" },
-      { text: "Porque fue prohibido por la ISO en 2020" },
-    ],
-    correct: 2,
-    explanation: "<strong>c) Colisiones.</strong> Desde 2004 se demostró que es posible generar dos archivos distintos con el mismo hash MD5 (colisión). Esto rompe la propiedad de unicidad del hash. MD5 solo es aceptable para checksums no criptográficos. Para contraseñas usar bcrypt, scrypt o Argon2."
-  },
-  {
-    cat: "cripto-sim",
-    q: "Se necesita descifrar el mensaje cifrado con César con desplazamiento +3: la letra <strong>F</strong>. ¿Cuál es la letra original?",
-    options: [
-      { text: "H" },
-      { text: "I" },
-      { text: "C" },
-      { text: "D" },
-    ],
-    correct: 2,
-    explanation: "<strong>c) C.</strong> Para descifrar César con desplazamiento +3 se resta 3 a cada letra. F (posición 6) − 3 = C (posición 3). El alfabeto: A=1, B=2, C=3, D=4, E=5, F=6... Si el desplazamiento fue +3 para cifrar, se aplica −3 para descifrar."
-  },
-
-  // ══════════════════════════════════════════════════════════
-  // CRIPTOGRAFÍA ASIMÉTRICA
-  // ══════════════════════════════════════════════════════════
-  {
-    cat: "cripto-asi",
-    q: "Para enviarle un mensaje <strong>confidencial</strong> a Ana, ¿con qué clave lo cifrás?",
-    options: [
-      { text: "Con tu propia clave privada" },
-      { text: "Con tu propia clave pública" },
-      { text: "Con la clave pública de Ana" },
-      { text: "Con la clave privada de Ana" },
-    ],
-    correct: 2,
-    explanation: "<strong>c) Clave pública de Ana.</strong> Solo Ana puede descifrarlo con su clave privada (que solo ella tiene). La clave pública de Ana es de libre distribución — cualquiera puede usarla para cifrar mensajes que solo Ana puede leer."
-  },
-  {
-    cat: "cripto-asi",
-    q: "Para <strong>firmar digitalmente</strong> un documento, ¿qué clave usás?",
-    options: [
-      { text: "La clave pública del destinatario" },
-      { text: "Tu propia clave pública" },
-      { text: "Tu propia clave privada" },
-      { text: "La clave privada del destinatario" },
-    ],
-    correct: 2,
-    explanation: "<strong>c) Tu clave privada.</strong> Solo vos tenés tu clave privada → la firma prueba que vino de vos (autenticidad). Cualquiera puede verificar la firma con tu clave pública. Este esquema garantiza integridad + autenticidad + no repudio."
-  },
-  {
-    cat: "cripto-asi",
-    q: "¿Qué garantías ofrece una <strong>firma digital</strong>? (seleccioná la más completa)",
-    options: [
-      { text: "Solo confidencialidad — nadie más puede leer el mensaje" },
-      { text: "Solo autenticidad — sabemos quién lo envió" },
-      { text: "Integridad, Autenticidad y No Repudio — el mensaje no fue alterado, proviene del firmante y este no puede negarlo" },
-      { text: "Disponibilidad — el mensaje siempre llega al destinatario" },
-    ],
-    correct: 2,
-    explanation: "<strong>c) Integridad + Autenticidad + No Repudio.</strong> La firma digital NO cifra el contenido (no garantiza confidencialidad). Garantiza que el mensaje no fue alterado (integridad), que viene del firmante (autenticidad) y que el firmante no puede negar haberlo firmado (no repudio)."
-  },
-  {
-    cat: "cripto-asi",
-    q: "En el proceso de verificación de una firma digital, el receptor descifra la firma con la clave pública del emisor y obtiene un hash. ¿Qué hace luego para verificar la integridad?",
-    options: [
-      { text: "Compara la firma con una lista de firmas válidas en el servidor" },
-      { text: "Calcula el hash del mensaje recibido y lo compara con el hash obtenido de la firma" },
-      { text: "Cifra el mensaje con la clave privada del receptor para comprobar el par" },
-      { text: "Consulta a la CA si la firma es válida" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) Comparar hashes.</strong> Receptor descifra firma (con clave pública emisor) → obtiene hash_original. Luego calcula SHA-256 del mensaje recibido → hash_recibido. Si hash_original == hash_recibido: integridad OK y autenticidad OK. Si difieren: el mensaje fue alterado o la firma es falsa."
-  },
-  {
-    cat: "cripto-asi",
-    q: "¿Cuál es la base matemática del algoritmo <strong>RSA</strong>?",
-    options: [
-      { text: "Logaritmo discreto sobre cuerpos finitos" },
-      { text: "Ecuaciones sobre curvas elípticas" },
-      { text: "La dificultad de factorizar el producto de dos números primos grandes" },
-      { text: "Permutaciones y sustituciones de bloques de bits" },
-    ],
-    correct: 2,
-    explanation: "<strong>c) Factorización de primos.</strong> RSA se basa en que multiplicar dos números primos grandes es computacionalmente fácil, pero factorizar el producto (encontrar los factores primos) es extremadamente difícil con la tecnología actual. ECC usa curvas elípticas; Diffie-Hellman usa logaritmo discreto."
-  },
-  {
-    cat: "cripto-asi",
-    q: "¿Qué es la <strong>criptografía híbrida</strong> y dónde se usa?",
-    options: [
-      { text: "Combina hash y cifrado para garantizar confidencialidad e integridad al mismo tiempo" },
-      { text: "Usa criptografía asimétrica para intercambiar la clave y simétrica para cifrar los datos — más rápida que asimétrica pura. Usada en HTTPS/TLS" },
-      { text: "Cifra dos veces: primero con clave pública y luego con clave privada" },
-      { text: "Combina dos algoritmos simétricos distintos para mayor seguridad" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) Asimétrica para clave + simétrica para datos.</strong> La asimétrica es hasta 1000× más lenta que la simétrica. HTTPS/TLS usa híbrida: Diffie-Hellman/RSA para acordar la clave de sesión (asimétrico) → AES para cifrar todos los datos (simétrico). Lo mejor de ambos mundos."
-  },
-
-  // ══════════════════════════════════════════════════════════
-  // AUTENTICACIÓN
-  // ══════════════════════════════════════════════════════════
-  {
-    cat: "auth",
-    q: "Un banco pide tu contraseña (factor 1) y luego envía un código por SMS a tu celular (factor 2). ¿A qué factor pertenece el SMS?",
-    options: [
-      { text: "Algo que SABES — porque es información que recibís" },
-      { text: "Algo que TIENES — el celular es un objeto físico en tu posesión" },
-      { text: "Algo que ERES — el número de celular es tuyo" },
-      { text: "No es un factor de autenticación válido" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) Algo que TENÉS.</strong> El celular es un objeto físico. El SMS llega a ese dispositivo — un atacante necesitaría tener físicamente tu teléfono para interceptarlo. Los 3 factores: SABES (contraseña/PIN), TENÉS (teléfono/token/tarjeta), ERES (huella/iris/rostro)."
-  },
-  {
-    cat: "auth",
-    q: "¿Cuál es la <strong>diferencia</strong> entre autenticación y autorización?",
-    options: [
-      { text: "Son sinónimos — ambos verifican si tenés permiso de acceso" },
-      { text: "Autenticación verifica QUIÉN sos. Autorización define QUÉ podés hacer una vez autenticado" },
-      { text: "Autenticación es para usuarios; autorización es para sistemas" },
-      { text: "La autenticación ocurre después de la autorización" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) QUIÉN sos vs QUÉ podés hacer.</strong> Autenticación: '¿Eres realmente el usuario 'guido'?' (verificar identidad). Autorización: '¿Puede 'guido' leer la carpeta /admin?' (permisos). Primero autenticás, luego el sistema verifica qué tenés autorizado."
-  },
-  {
-    cat: "auth",
-    q: "La biometría (huella dactilar, reconocimiento facial) es el factor de autenticación más fuerte. ¿Cuál es su principal desventaja?",
-    options: [
-      { text: "Es el más lento de los tres factores" },
-      { text: "Si se compromete, no se puede resetear — no podés cambiar tu huella como cambiarías una contraseña" },
-      { text: "Solo funciona en dispositivos de gama alta" },
-      { text: "Requiere conexión a internet para verificar la identidad" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) No se puede resetear.</strong> Si roban tu contraseña, la cambiás. Si pierden tu token, pedís uno nuevo. Si comprometen tu huella dactilar o iris, no podés 'cambiarlos'. Por eso la biometría NUNCA debe usarse como factor único — siempre combinada con otro factor."
-  },
-  {
-    cat: "auth",
-    q: "¿Por qué el protocolo <strong>Kerberos</strong> nunca envía contraseñas por la red?",
-    options: [
-      { text: "Porque cifra las contraseñas con AES antes de enviarlas" },
-      { text: "Porque usa tickets de tiempo limitado: el KDC verifica la contraseña localmente y emite un TGT. Las comunicaciones posteriores usan ese ticket, nunca la contraseña" },
-      { text: "Porque almacena las contraseñas en el cliente y nunca las transfiere" },
-      { text: "Porque usa hashing unidireccional en tránsito" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) Tickets de tiempo limitado.</strong> El cliente prueba su identidad al KDC localmente. El KDC emite un TGT (Ticket Granting Ticket). El cliente usa ese TGT para pedir acceso a servicios — la contraseña nunca viaja por la red. Los tickets tienen TTL para prevenir ataques de replay."
-  },
-  {
-    cat: "auth",
-    q: "¿Qué es la <strong>autenticación adaptativa</strong>?",
-    options: [
-      { text: "Autenticación que se adapta al dispositivo (móvil, PC, tablet)" },
-      { text: "Sistema que evalúa el riesgo en tiempo real (ubicación, dispositivo, comportamiento) y ajusta el nivel de autenticación requerido" },
-      { text: "MFA que permite elegir qué factor usar según la preferencia del usuario" },
-      { text: "Autenticación sin contraseña basada solo en biometría" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) Evaluación de riesgo en tiempo real.</strong> Si iniciás sesión desde tu ciudad habitual con tu dispositivo de siempre → solo pide contraseña. Si iniciás desde otro país a las 3am con dispositivo desconocido → exige factor adicional. El sistema evalúa el contexto y aumenta los requisitos cuando detecta anomalías."
-  },
-  {
-    cat: "auth",
-    q: "¿Qué es el <strong>SSO (Single Sign-On)</strong>?",
-    options: [
-      { text: "Un sistema donde cada servicio requiere su propio usuario y contraseña para mayor seguridad" },
-      { text: "Autenticación única que otorga acceso a múltiples sistemas sin reautenticarse en cada uno" },
-      { text: "Un método de autenticación sin contraseña basado únicamente en biometría" },
-      { text: "Un protocolo para sincronizar contraseñas entre múltiples sistemas" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) Autenticación única, acceso múltiple.</strong> Con SSO iniciás sesión una vez y accedés a múltiples servicios (correo, ERP, CRM) sin volver a autenticarte. Kerberos implementa SSO en redes corporativas. OAuth/SAML para servicios web ('Iniciar sesión con Google')."
-  },
-
-  // ══════════════════════════════════════════════════════════
-  // AUDITORÍA
-  // ══════════════════════════════════════════════════════════
-  {
-    cat: "auditoria",
-    q: "¿Cuál es la diferencia principal entre <strong>monitoreo</strong> y <strong>auditoría</strong> de seguridad?",
-    options: [
-      { text: "El monitoreo es más caro pero más preciso que la auditoría" },
-      { text: "El monitoreo es en tiempo real (detectar y reaccionar ahora). La auditoría es histórica (verificar cumplimiento de un período pasado)" },
-      { text: "La auditoría ocurre durante el incidente; el monitoreo ocurre después" },
-      { text: "Son sinónimos — ambos revisan logs del sistema" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) Tiempo real vs histórico.</strong> Monitoreo: tablero del auto (velocidad actual, alertas en vivo). Auditoría: revisión técnica anual (¿se cumplieron las políticas en los últimos 12 meses?). Un SIEM es herramienta de monitoreo; una auditoría ISO 27001 es histórica y sistemática."
-  },
-  {
-    cat: "auditoria",
-    q: "Un firewall bloquea tráfico malicioso. ¿Qué tipo de control de seguridad es?",
-    options: [
-      { text: "Solo correctivo — recupera el sistema después del ataque" },
-      { text: "Solo detectivo — identifica y alerta sobre intentos maliciosos" },
-      { text: "Principalmente preventivo (bloquea el tráfico antes de que entre), pero también detectivo (registra intentos en logs)" },
-      { text: "Solo preventivo — no genera ningún tipo de registro" },
-    ],
-    correct: 2,
-    explanation: "<strong>c) Preventivo Y detectivo.</strong> Un mismo control puede tener múltiples funciones. El firewall es preventivo (bloquea tráfico antes de que entre) y detectivo (registra cada intento de acceso no autorizado en logs). Los IDS/IPS son principalmente detectivos pero pueden bloquear (correctivo)."
-  },
-  {
-    cat: "auditoria",
-    q: "¿Qué son los backups y a qué tipo de control de seguridad corresponden?",
-    options: [
-      { text: "Preventivos — evitan que los datos sean robados" },
-      { text: "Detectivos — alertan cuando los datos son modificados" },
-      { text: "Correctivos — permiten restaurar el sistema después de un incidente" },
-      { text: "Los backups no son un control de seguridad formal" },
-    ],
-    correct: 2,
-    explanation: "<strong>c) Correctivo.</strong> Los backups no previenen el incidente ni lo detectan — actúan después para reducir el impacto y recuperar el sistema. Son parte del DRP (Disaster Recovery Plan). Preventivo = MFA, cifrado. Detectivo = IDS, logs, SIEM."
-  },
-  {
-    cat: "auditoria",
-    q: "¿Cuáles son las 5 funciones del <strong>NIST Cybersecurity Framework</strong>?",
-    options: [
-      { text: "Planificar → Hacer → Verificar → Actuar → Mejorar" },
-      { text: "Identificar → Proteger → Detectar → Responder → Recuperar" },
-      { text: "Prevenir → Detectar → Contener → Erradicar → Recuperar" },
-      { text: "Analizar → Diseñar → Implementar → Operar → Mejorar" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) Identificar → Proteger → Detectar → Responder → Recuperar.</strong> El NIST CSF es un marco voluntario muy adoptado. Planificar-Hacer-Verificar-Actuar (PHVA) es el ciclo de ISO 27001. Prevenir-Detectar-Contener-Erradicar-Recuperar es el proceso de respuesta a incidentes (PICERL)."
-  },
-  {
-    cat: "auditoria",
-    q: "¿Cuál es el <strong>principio de independencia</strong> en auditoría de seguridad?",
-    options: [
-      { text: "La auditoría solo puede ser realizada por consultores externos — nunca internos" },
-      { text: "El auditor debe ser imparcial y libre de conflictos de interés. Quien audita no puede ser quien diseñó o implementó los controles auditados" },
-      { text: "Cada área de la organización debe auditarse a sí misma sin interferencia externa" },
-      { text: "La auditoría debe ser independiente del ciclo PHVA del SGSI" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) Imparcialidad y sin conflicto de interés.</strong> Si el mismo equipo que diseñó los controles los audita, podría pasar por alto sus propios errores. La independencia garantiza objetividad. Las auditorías externas (requeridas para certificación ISO 27001) maximizan este principio."
-  },
-  {
-    cat: "auditoria",
-    q: "La <strong>Ley 25.326</strong> en Argentina regula:",
-    options: [
-      { text: "El uso de criptografía en sistemas gubernamentales" },
-      { text: "Los requisitos de auditoría para empresas del sector financiero" },
-      { text: "La protección de datos personales — consentimiento, finalidad, calidad y seguridad. Autoridad de aplicación: AAIP" },
-      { text: "El estándar nacional de gestión de seguridad informática equivalente a ISO 27001" },
-    ],
-    correct: 2,
-    explanation: "<strong>c) Protección de datos personales.</strong> La Ley 25.326 define principios de Consentimiento (el titular debe autorizar el uso), Finalidad (solo para el propósito declarado), Calidad (datos exactos y actualizados) y Seguridad (medidas técnicas para protegerlos). La AAIP es la Agencia de Acceso a la Información Pública."
-  },
-  {
-    cat: "auditoria",
-    q: "¿Cuál es la diferencia entre <strong>privacidad de datos</strong> y <strong>seguridad de la información</strong>?",
-    options: [
-      { text: "Son exactamente lo mismo — se usan indistintamente" },
-      { text: "Seguridad aplica medidas técnicas (CIA). Privacidad es el derecho de las personas a controlar cómo se usan sus datos. Se puede tener una sin la otra" },
-      { text: "La privacidad es un subconjunto de la seguridad — no existen sin seguridad" },
-      { text: "La seguridad es un concepto legal; la privacidad es técnico" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) Técnica vs derecho fundamental.</strong> Ejemplo: una empresa cifra perfectamente su base de datos (seguridad OK) pero vende los datos a terceros sin consentimiento (privacidad violada). O al revés: una empresa tiene política de privacidad clara pero sin controles técnicos (seguridad violada). Son complementarias pero distintas."
-  },
-
-  // ══════════════════════════════════════════════════════════
-  // FUNDAMENTOS — CLASIFICACIÓN, HUELLA DIGITAL, SEG. FÍSICA
-  // ══════════════════════════════════════════════════════════
-  {
-    cat: "fundamentos",
-    q: "¿Cuál es la diferencia entre <strong>seguridad informática</strong> y <strong>seguridad de la información</strong>?",
-    options: [
-      { text: "Son sinónimos — ambas protegen los mismos activos de la misma forma" },
-      { text: "Seguridad informática protege sistemas, redes y dispositivos tecnológicos. Seguridad de la información protege la información independientemente del formato o medio (papel, digital, verbal)" },
-      { text: "Seguridad informática es más amplia — incluye todo lo que abarca la seguridad de la información" },
-      { text: "La seguridad de la información es un subconjunto exclusivo de la ciberseguridad" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) Alcance distinto.</strong> Seguridad informática: foco en activos tecnológicos (servidores, redes, dispositivos). Seguridad de la información: protege la información sin importar su formato — un documento impreso con datos confidenciales también debe protegerse aunque no sea digital."
-  },
-  {
-    cat: "fundamentos",
-    q: "Según la clasificación basada en sensibilidad, ¿cuál nivel corresponde a información que puede causar daño significativo si es divulgada?",
-    options: [
-      { text: "Pública — sin restricciones de acceso" },
-      { text: "Interna — de uso interno pero no divulgada al público" },
-      { text: "Restringida — solo personal clave tiene acceso" },
-      { text: "Confidencial — puede causar daño significativo si se expone" },
-    ],
-    correct: 3,
-    explanation: "<strong>d) Confidencial.</strong> La jerarquía de clasificación por sensibilidad es: Pública → Interna → Restringida → Confidencial. La información Confidencial es la de mayor criticidad — su divulgación puede causar daño significativo a la organización o sus partes involucradas."
-  },
-  {
-    cat: "fundamentos",
-    q: "¿Cuál es la diferencia entre <strong>seguridad física</strong> y <strong>seguridad lógica</strong>?",
-    options: [
-      { text: "La seguridad física protege servidores y la lógica protege datos" },
-      { text: "Seguridad física: protección de activos tangibles (hardware, instalaciones). Seguridad lógica: protección mediante controles de software, políticas digitales y permisos" },
-      { text: "La seguridad lógica es más importante que la física en todos los contextos" },
-      { text: "Son lo mismo aplicado a distintas capas del modelo OSI" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) Tangible vs digital.</strong> Física: candados, cámaras, control de acceso a sala de servidores, guardias. Lógica: firewall, cifrado, control de acceso con roles, políticas de contraseñas. Ambas son necesarias — un servidor perfectamente cifrado pero en una sala sin llave es vulnerable físicamente."
-  },
-  {
-    cat: "fundamentos",
-    q: "¿Qué es la <strong>huella digital activa</strong>?",
-    options: [
-      { text: "Los datos recolectados sin acción directa del usuario, como cookies o geolocalización" },
-      { text: "La información compartida conscientemente por el usuario, como posts en redes sociales o formularios completados" },
-      { text: "Los datos archivados permanentemente en bases de datos de terceros" },
-      { text: "El conjunto de contraseñas e identidades digitales de una persona" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) Información compartida conscientemente.</strong> Huella activa: posts, likes, formularios — el usuario decide publicarlos. Huella pasiva: cookies, geolocalización, historial de navegación — se recolectan sin acción directa. Huella permanente: datos archivados en servidores de terceros que persisten incluso si el usuario los borra."
-  },
-  {
-    cat: "fundamentos",
-    q: "¿Cuál es la jerarquía documental correcta en políticas de seguridad, de mayor a menor nivel de abstracción?",
-    options: [
-      { text: "Procedimiento → Norma → Política" },
-      { text: "Norma → Política → Procedimiento" },
-      { text: "Política → Norma → Procedimiento" },
-      { text: "Política → Procedimiento → Norma" },
-    ],
-    correct: 2,
-    explanation: "<strong>c) Política → Norma → Procedimiento.</strong> Política: documento de alto nivel (dirección) que define QUÉ y POR QUÉ. Norma: especifica estándares técnicos, define CUÁNTO y CON QUÉ. Procedimiento: instrucciones paso a paso, define CÓMO hacerlo. La política es la más abstracta; el procedimiento, la más concreta y operacional."
-  },
-
-  // ══════════════════════════════════════════════════════════
-  // CRIPTOGRAFÍA SIMÉTRICA — NUEVAS (MAC, MODOS, ECB/CBC)
-  // ══════════════════════════════════════════════════════════
-  {
-    cat: "cripto-sim",
-    q: "¿Qué es un <strong>MAC (Message Authentication Code)</strong> y en qué se diferencia de un hash simple?",
-    options: [
-      { text: "Es igual a un hash SHA-256 pero calculado más rápido" },
-      { text: "Es como una función hash pero requiere una clave secreta compartida — garantiza integridad Y autenticidad del mensaje" },
-      { text: "Es el nombre técnico del hash en protocolos de red" },
-      { text: "Es un certificado digital simplificado sin CA" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) Hash + clave secreta.</strong> Un hash simple verifica integridad pero cualquiera puede calcularlo. El MAC requiere la clave secreta — si el MAC coincide, el mensaje no fue alterado (integridad) Y provino de alguien que tiene la clave (autenticidad). Sin la clave no se puede generar ni falsificar el MAC."
-  },
-  {
-    cat: "cripto-sim",
-    q: "En el modo de operación <strong>ECB (Electronic Codebook)</strong>, cada bloque se cifra independientemente. ¿Cuál es su principal debilidad?",
-    options: [
-      { text: "Es demasiado lento para datos en tiempo real" },
-      { text: "Bloques de texto plano idénticos producen bloques cifrados idénticos, revelando patrones en los datos" },
-      { text: "No es compatible con AES-256" },
-      { text: "Requiere un IV (vector de inicialización) diferente para cada mensaje" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) Patrones visibles.</strong> ECB cifra cada bloque independientemente con la misma clave. Si dos bloques de texto plano son iguales, producen el mismo bloque cifrado → los patrones del original se filtran al cifrado. El modo CBC (Cipher Block Chaining) soluciona esto encadenando cada bloque con el resultado del anterior."
-  },
-  {
-    cat: "cripto-sim",
-    q: "El modo <strong>CBC (Cipher Block Chaining)</strong> encadena bloques usando el resultado cifrado del bloque anterior. ¿Qué necesita además la operación del primer bloque?",
-    options: [
-      { text: "Una clave adicional diferente a la clave principal" },
-      { text: "Un IV (vector de inicialización) — valor aleatorio que inicia la cadena para garantizar que mensajes idénticos produzcan cifrados distintos" },
-      { text: "El hash SHA-256 del mensaje completo" },
-      { text: "Una firma digital del emisor" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) Vector de inicialización (IV).</strong> El primer bloque no tiene bloque anterior para encadenar, entonces se usa el IV. Debe ser aleatorio y único por mensaje — así dos mensajes idénticos cifrados con la misma clave producen cifrados completamente distintos, evitando los patrones de ECB."
-  },
-
-  // ══════════════════════════════════════════════════════════
-  // CRIPTOGRAFÍA ASIMÉTRICA — NUEVAS (PKI, Diffie-Hellman)
-  // ══════════════════════════════════════════════════════════
-  {
-    cat: "cripto-asi",
-    q: "¿Para qué sirve el protocolo <strong>Diffie-Hellman</strong>?",
-    options: [
-      { text: "Para firmar digitalmente documentos de forma anónima" },
-      { text: "Para acordar una clave secreta compartida a través de un canal público sin necesidad de intercambiar el secreto directamente" },
-      { text: "Para cifrar grandes volúmenes de datos de forma asimétrica" },
-      { text: "Para revocar certificados digitales comprometidos" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) Acuerdo de claves sin compartir el secreto.</strong> Diffie-Hellman usa aritmética modular (operaciones fáciles de calcular en una dirección, difíciles de revertir). Dos partes pueden derivar la misma clave secreta sin que un interceptador pueda deducirla aunque vea todo el intercambio. Es la base del establecimiento de claves en TLS."
-  },
-  {
-    cat: "cripto-asi",
-    q: "En la jerarquía de PKI, ¿cuál es el rol de la <strong>Root CA</strong>?",
-    options: [
-      { text: "Emitir certificados directamente a usuarios finales y servidores web" },
-      { text: "Es la autoridad raíz de máxima confianza que firma certificados de CAs intermedias — su clave privada es el activo más crítico de toda la infraestructura" },
-      { text: "Gestionar la base de datos de certificados revocados (CRL)" },
-      { text: "Validar identidades de usuarios a través de documentos de identidad" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) Autoridad raíz de máxima confianza.</strong> Jerarquía: Root CA → Intermediate CA → End Entity (usuarios/servidores). La Root CA firma los certificados de las CAs intermedias, que a su vez emiten los certificados finales. La Root CA usualmente está offline para proteger su clave privada — si se compromete, toda la jerarquía cae."
-  },
-  {
-    cat: "cripto-asi",
-    q: "¿Qué problema resuelve la <strong>PKI (Infraestructura de Clave Pública)</strong>?",
-    options: [
-      { text: "Acelera el cifrado asimétrico para que sea tan rápido como el simétrico" },
-      { text: "El problema de autenticidad de claves públicas: sin PKI, no podés saber si una clave pública realmente pertenece a quien dice ser" },
-      { text: "Permite reutilizar la misma clave privada en múltiples certificados" },
-      { text: "Elimina la necesidad de certificados digitales en comunicaciones HTTPS" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) Autenticidad de claves públicas.</strong> Sin PKI, un atacante podría interceptar tu comunicación y substituir la clave pública legítima por la suya (ataque man-in-the-middle). La CA firma el certificado que vincula la clave pública con la identidad verificada del propietario — el navegador confía en la CA y por eso confía en el certificado."
-  },
-
-  // ══════════════════════════════════════════════════════════
-  // CONTROL DE ACCESO — BELL-LAPADULA, BIBA, MODELOS
-  // ══════════════════════════════════════════════════════════
-  {
-    cat: "acceso",
-    q: "El modelo <strong>Bell-LaPadula</strong> establece que un sujeto no puede leer datos de nivel superior a su clearance (<em>no read up</em>) ni escribir a niveles inferiores (<em>no write down</em>). ¿Qué propiedad de la CIA protege principalmente?",
-    options: [
-      { text: "Disponibilidad — garantiza que los datos siempre estén accesibles" },
-      { text: "Integridad — evita que datos correctos sean contaminados" },
-      { text: "Confidencialidad — evita que información clasificada se filtre a niveles inferiores" },
-      { text: "Autenticidad — verifica la identidad de quien accede" },
-    ],
-    correct: 2,
-    explanation: "<strong>c) Confidencialidad.</strong> Bell-LaPadula es el modelo clásico de confidencialidad militar. No read up: un agente de nivel Secreto no puede leer datos Top Secret. No write down: un agente de nivel Top Secret no puede escribir en un archivo de nivel Secreto (evitaría filtración hacia abajo). El objetivo es impedir que la información clasificada baje de nivel."
-  },
-  {
-    cat: "acceso",
-    q: "El modelo <strong>Biba</strong> prohíbe leer datos de nivel inferior (<em>no read down</em>) y escribir a niveles superiores (<em>no write up</em>). ¿Qué propiedad protege?",
-    options: [
-      { text: "Confidencialidad — igual que Bell-LaPadula pero en sentido inverso" },
-      { text: "Integridad — evita que datos de alta integridad sean contaminados por datos de menor confianza" },
-      { text: "Disponibilidad — garantiza que los datos de alta integridad siempre estén disponibles" },
-      { text: "No repudio — garantiza que los cambios puedan atribuirse a su autor" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) Integridad.</strong> Biba es el dual de Bell-LaPadula pero para integridad. No read down: un proceso de alta integridad no lee datos de baja confianza (no se contamina). No write up: un proceso de baja integridad no puede escribir en datos de alta integridad (no los corrompe). Ejemplo: un proceso de usuario no puede modificar archivos del sistema operativo."
-  },
-  {
-    cat: "acceso",
-    q: "¿Cuál es la diferencia entre <strong>identificación</strong>, <strong>autenticación</strong> y <strong>autorización</strong> en el proceso de control de acceso?",
-    options: [
-      { text: "Son tres formas distintas de referirse al mismo proceso de login" },
-      { text: "Identificación: declarar identidad. Autenticación: probar que esa identidad es legítima. Autorización: definir qué recursos puede acceder una vez autenticado" },
-      { text: "Identificación y autenticación son lo mismo; la autorización es un proceso separado" },
-      { text: "La autorización ocurre antes que la autenticación en sistemas modernos" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) Tres pasos secuenciales.</strong> Identificación: 'Soy el usuario guido' (declaro). Autenticación: 'Acá está mi contraseña/huella/token para probarlo' (verifico). Autorización: 'guido puede leer /docs pero no puede borrar /admin' (permisos). El orden es siempre: Identificación → Autenticación → Autorización."
-  },
-  {
-    cat: "acceso",
-    q: "¿Qué es el <strong>Monitor de Referencias</strong> en seguridad?",
-    options: [
-      { text: "Una herramienta de monitoreo de logs en tiempo real" },
-      { text: "El núcleo de seguridad que media todos los accesos a recursos — debe ser imposible de eludir, siempre invocado, y lo suficientemente pequeño para ser verificable" },
-      { text: "Un certificado digital que autentica al administrador del sistema" },
-      { text: "Un firewall de capa de aplicación que filtra tráfico HTTP" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) Núcleo de seguridad mediador.</strong> El Monitor de Referencias es el concepto que garantiza que ningún acceso a un recurso pueda ocurrir sin pasar por el control de seguridad. Sus tres propiedades: siempre invocado (no se puede bypasear), a prueba de manipulación, y verificable (lo suficientemente pequeño para ser auditado formalmente)."
-  },
-
-  // ══════════════════════════════════════════════════════════
-  // PREGUNTAS INTEGRADORAS — COMPARATIVAS Y TRAMPA
-  // ══════════════════════════════════════════════════════════
-  {
-    cat: "fundamentos",
-    q: "Un dato es 'la cantidad 37'. Al procesarlo en contexto se convierte en 'la temperatura corporal de un paciente es 37°C'. ¿Qué describe esta transformación?",
-    options: [
-      { text: "Dato → Cifrado → Información" },
-      { text: "Dato (recurso en bruto sin significado) → Procesamiento (darle contexto) → Información (dato procesado con utilidad para decisiones)" },
-      { text: "Información → Procesamiento → Dato" },
-      { text: "Solo aplica en bases de datos relacionales, no en seguridad" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) Dato → Procesamiento → Información.</strong> Un dato aislado no significa nada. Al darle contexto (procesarlo) se convierte en información útil para tomar decisiones. En seguridad esto importa porque clasifica qué proteger: '37' almacenado en bruto es un dato; la historia clínica completa es información que requiere clasificación y protección."
-  },
-  {
-    cat: "riesgo",
-    q: "¿Por qué no existe el <strong>riesgo cero</strong> en seguridad de la información?",
-    options: [
-      { text: "Porque los controles de seguridad son muy costosos para implementarlos todos" },
-      { text: "Porque el panorama de amenazas evoluciona constantemente, los sistemas son complejos y la intervención humana introduce vulnerabilidades inevitables" },
-      { text: "Porque la normativa ISO no permite declarar riesgo cero" },
-      { text: "Porque siempre existe al menos una amenaza activa en la red" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) Tres razones fundamentales.</strong> (1) Las amenazas evolucionan: lo que hoy es seguro mañana puede tener una vulnerabilidad descubierta. (2) Complejidad: los sistemas modernos son tan complejos que es imposible auditar todo. (3) Factor humano: el error humano, el phishing o el insider threat son imposibles de eliminar completamente. El objetivo es reducir el riesgo a un nivel aceptable."
-  },
-  {
-    cat: "cripto-sim",
-    q: "El <strong>principio de Kerckhoffs</strong> establece que la seguridad de un sistema criptográfico debe residir en la clave, no en el secreto del algoritmo. ¿Cuál es una consecuencia práctica de este principio?",
-    options: [
-      { text: "Los algoritmos de cifrado deben mantenerse secretos para mayor seguridad" },
-      { text: "Algoritmos como AES y RSA son públicos y auditables — la seguridad depende de mantener la clave secreta, no de que el algoritmo sea desconocido" },
-      { text: "La clave puede ser corta si el algoritmo es suficientemente complejo" },
-      { text: "Solo los gobiernos pueden conocer los detalles de los algoritmos de cifrado" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) Algoritmos públicos, claves secretas.</strong> AES, RSA, SHA-256 son completamente públicos — su código fuente es auditable por cualquier investigador. Esto es una fortaleza: miles de criptógrafos han intentado romperlos sin éxito. La seguridad real está en la clave. Un algoritmo secreto ('security by obscurity') colapsa en cuanto alguien lo descubre."
-  },
-  {
-    cat: "auditoria",
-    q: "¿Cuál es el marco de <strong>gobernanza de TI</strong> que ayuda a las organizaciones a optimizar el valor de TI y gestionar riesgos, más allá de la seguridad específica?",
-    options: [
-      { text: "ISO 27001 — requisitos del SGSI" },
-      { text: "NIST CSF — framework de ciberseguridad" },
-      { text: "COBIT — marco integral para gobernanza y gestión de información y tecnología empresarial" },
-      { text: "ISO 27005 — gestión de riesgos de seguridad" },
-    ],
-    correct: 2,
-    explanation: "<strong>c) COBIT.</strong> COBIT (Control Objectives for Information and related Technology) es el marco más amplio: gobernanza integral de TI alineada con objetivos de negocio. ISO 27001: SGSI enfocado en seguridad. NIST CSF: gestión de riesgos de ciberseguridad. ISO 27005: específicamente gestión de riesgos de seguridad."
-  },
-  {
-    cat: "acceso",
-    q: "Un sistema de e-banking pide contraseña (factor 1), luego detecta que el login viene de un país distinto al habitual y exige además el token físico. ¿Qué concepto de autenticación describe esto?",
-    options: [
-      { text: "MFA estático — siempre pide los mismos dos factores" },
-      { text: "SSO — autenticación única para múltiples servicios" },
-      { text: "Autenticación adaptativa — ajusta los requisitos según el riesgo detectado en tiempo real" },
-      { text: "Autenticación biométrica — usa características físicas del usuario" },
-    ],
-    correct: 2,
-    explanation: "<strong>c) Autenticación adaptativa.</strong> El sistema evaluó el contexto (país inusual = riesgo elevado) y escaló dinámicamente los requisitos de autenticación. En condiciones normales (mismo país, mismo dispositivo) habría aceptado solo la contraseña. La adaptatividad permite mayor seguridad sin sacrificar usabilidad en el caso habitual."
-  },
-  {
-    cat: "cripto-asi",
-    q: "¿Qué ventaja tiene <strong>ECC (Elliptic Curve Cryptography)</strong> sobre RSA para dispositivos con recursos limitados como IoT o móviles?",
-    options: [
-      { text: "ECC es más fácil de implementar en software que RSA" },
-      { text: "ECC ofrece seguridad equivalente con claves mucho más cortas — 256 bits ECC ≈ 3072 bits RSA — consumiendo menos CPU, memoria y batería" },
-      { text: "ECC no requiere generación de números primos, por lo que es determinista" },
-      { text: "ECC está basado en la misma matemática que RSA pero optimizado para hardware pequeño" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) Misma seguridad, claves más cortas.</strong> Las curvas elípticas permiten alcanzar el mismo nivel de seguridad que RSA con claves significativamente más cortas. Esto es crítico en IoT y móviles donde CPU, memoria y batería son limitados. Una operación con ECC-256 consume mucho menos recursos que RSA-3072 para el mismo nivel de seguridad."
-  },
-  {
-    cat: "auditoria",
-    q: "Una empresa sufre un incidente. El equipo de seguridad contiene el ataque, elimina el malware y restaura los sistemas desde backups. ¿En cuáles funciones del <strong>NIST CSF</strong> actuaron?",
-    options: [
-      { text: "Solo en Detectar — identificaron el incidente" },
-      { text: "En Detectar, Responder y Recuperar — identificaron el incidente, lo contuvieron/eliminaron y restauraron los servicios" },
-      { text: "Solo en Responder — tomaron medidas ante el incidente" },
-      { text: "En las 5 funciones simultáneamente" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) Detectar + Responder + Recuperar.</strong> Detectar: identificaron que había un incidente. Responder: contuvieron el ataque y eliminaron el malware (mitigación activa). Recuperar: restauraron sistemas desde backups (vuelta a la normalidad). Identificar y Proteger son funciones proactivas previas al incidente."
-  },
-  {
-    cat: "fundamentos",
-    q: "¿Cuál es la diferencia entre <strong>ciberespacio</strong>, <strong>ciberamenaza</strong> y <strong>ciberhigiene</strong>?",
-    options: [
-      { text: "Son tres nombres distintos para el mismo concepto de seguridad digital" },
-      { text: "Ciberespacio: el universo de interacción digital. Ciberamenaza: los riesgos y ataques en ese entorno. Ciberhigiene: las prácticas cotidianas fundamentales para protegerse" },
-      { text: "Ciberhigiene es la versión avanzada de la ciberseguridad para expertos" },
-      { text: "El ciberespacio solo incluye internet público, no redes corporativas privadas" },
-    ],
-    correct: 1,
-    explanation: "<strong>b) Tres capas del ciclo evolutivo.</strong> Ciberespacio (dónde ocurre todo) → Ciberamenazas (qué riesgos existen) → Ciberseguridad (defensa activa) → Ciberhigiene (prácticas básicas diarias como actualizar software, usar contraseñas seguras, no abrir adjuntos sospechosos). La ciberhigiene es el nivel más básico y accesible para cualquier usuario."
-  },
-  {
-    cat: "riesgo",
-    q: "Una organización decide no corregir una vulnerabilidad de bajo impacto porque el costo del parche supera ampliamente el daño potencial. ¿Qué estrategia de riesgo aplica y qué debe hacer obligatoriamente?",
-    options: [
-      { text: "Transferir — debe contratar un seguro para ese riesgo específico" },
-      { text: "Evitar — debe eliminar el sistema vulnerable" },
-      { text: "Aceptar — asume conscientemente el riesgo y debe documentar formalmente esa decisión" },
-      { text: "Mitigar — implementa controles alternativos de menor costo" },
-    ],
-    correct: 2,
-    explanation: "<strong>c) Aceptar.</strong> Aceptar no significa ignorar — significa decidir conscientemente que el costo/esfuerzo de mitigar supera el impacto potencial y documentar esa decisión formalmente. Esta documentación es crítica: demuestra que la organización fue diligente y tomó una decisión informada, no que simplemente se olvidó del riesgo."
-  },
-
-];
-
 // ──────────────────────────────────────────────
 // ESTADO Y LÓGICA
 // ──────────────────────────────────────────────
@@ -1034,15 +523,15 @@ const state = new Array(questions.length).fill(null);
 let current = 0;
 let score   = 0;
 
-const CAT_LABELS = {
-  "cia":         "CIA Triad",
-  "riesgo":      "Gestión de Riesgo",
-  "cripto-sim":  "Cripto Simétrica",
-  "cripto-asi":  "Cripto Asimétrica",
-  "auth":        "Autenticación",
-  "auditoria":   "Auditoría",
-  "acceso":      "Control de Acceso",
-  "fundamentos": "Fundamentos",
+const CAT_COLORS = {
+  "cia":         "#00c8f8",
+  "riesgo":      "#a78bfa",
+  "cripto-sim":  "#00e87c",
+  "cripto-asi":  "#34d399",
+  "auth":        "#fbbf24",
+  "auditoria":   "#fb7185",
+  "acceso":      "#6ee7b7",
+  "fundamentos": "#c084fc",
 };
 
 function escHtml(s){
@@ -1052,7 +541,8 @@ function escHtml(s){
 function render(){
   const q = questions[current];
   const s = state[current];
-  const letters = ['a','b','c','d','e'];
+  const letters = ['A','B','C','D','E'];
+  const catColor = CAT_COLORS[q.cat] || '#00c8f8';
 
   const optionsHTML = q.options.map((opt,i)=>{
     const content = opt.code
@@ -1079,15 +569,22 @@ function render(){
   const showNext = s !== null;
   const showPrev = current > 0;
   const isLast   = current === questions.length - 1;
+  const qNum     = String(current + 1).padStart(2, '0');
 
   document.getElementById('quiz-container').innerHTML = `
     <div class="card">
-      <span class="badge ${q.cat}">${CAT_LABELS[q.cat]}</span>
-      <h2>${q.q}</h2>
+      <div class="card-stripe" style="background:${catColor}"></div>
+      <div class="card-header">
+        <span class="badge ${q.cat}">${CAT_LABELS[q.cat]}</span>
+        <span class="q-counter">Q·${qNum} / ${questions.length}</span>
+      </div>
+      <div class="card-body">
+        <h2>${q.q}</h2>
+      </div>
       <div class="options">${optionsHTML}</div>
       ${feedbackHTML}
       <div class="btn-row">
-        <button class="btn-prev ${showPrev?'show':''}" onclick="prev()">← Anterior</button>
+        <button class="btn-prev ${showPrev?'show':''}" onclick="prev()">← Ant</button>
         <button class="btn-next ${showNext?'show':''}" onclick="next()">
           ${isLast ? 'Ver resultado' : 'Siguiente →'}
         </button>
@@ -1142,10 +639,10 @@ function showScore(){
 
   const pct = score / questions.length;
   let msg = '';
-  if     (pct===1)   msg='Perfecto. Dominás todos los temas del parcial.';
-  else if(pct>=0.85) msg='Muy bien. Repasá los que fallaste.';
-  else if(pct>=0.65) msg='Bien encaminado. Prestá atención a criptografía y controles de auditoría.';
-  else               msg='Seguí practicando — revisá CIA, gestión de riesgo y los factores de autenticación.';
+  if     (pct===1)   msg = 'Perfecto. Dominás todos los temas del parcial.';
+  else if(pct>=0.85) msg = 'Muy bien. Repasá los que fallaste.';
+  else if(pct>=0.65) msg = 'Bien encaminado. Prestá atención a criptografía y controles de auditoría.';
+  else               msg = 'Seguí practicando — revisá CIA, gestión de riesgo y los factores de autenticación.';
   document.getElementById('final-msg').textContent = msg;
   window.scrollTo({top:0, behavior:'smooth'});
 }
